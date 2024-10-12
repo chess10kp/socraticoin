@@ -32,6 +32,3 @@ class Block:
 			   +     self.prevHash      + " "
 			   + str(self.nonce)        + "\n"
 			   + str(self.data)         + "\n" )
-
-
-# test commut 
