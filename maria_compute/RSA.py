@@ -58,19 +58,31 @@ def check_if_work(hashofmessage,signiture,publickey):
         return False
 def generate_sig(hash,d,n):
     pow(hash,d,n)
+
 ################
 
-def setup():
+def setup_pub_and_private():
     e = pic_public(phi)
     print("here is youur public : ",e)
     d = calculate_privatekey(e)
     print("here is your private key : ",d)
-    msg = input("PLEASE ADD MESSAGE")
 
+    return e,d
+def createmsg(sender,amount,reciever):
+    msg = sender+amount+reciever
+    return msg
+
+def createsig(msg,d):
+    
     print("encrypt ", msg)
     msg = encrypt(msg)
     hash = SHA1(msg)
     signiture = generate_sig(hash,d,n)
-    print("signiture: ",hex(signiture))
-    hashfromsig = pow(signiture,e,n)
+    return signiture
 
+def verify(hash,signiture,e):
+
+    print("signiture: ",hex(signiture))
+
+    test = check_if_work(hash,signiture,e)
+    return test
