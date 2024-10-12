@@ -33,9 +33,9 @@ def calculate_privatekey(e):
     k=2
     d=(1+(k*phi))/e
     return d
-def encrypt(msg):
+def encrypt(msg,d):
     print("here mesage ",msg)
-    c = pow(msg,e)
+    c = pow(msg,d)
     c = math.fmod(c,n)
     print("encrypted data = ", c)
 
@@ -75,6 +75,7 @@ def createmsg(sender,amount,reciever):
 def createsig(msg,d):
     
     print("encrypt ", msg)
+    msg = encrypt(msg,d)
     hash = SHA1(msg)
     signiture = generate_sig(hash,d,n)
     return signiture
