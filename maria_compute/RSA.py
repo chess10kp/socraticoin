@@ -42,14 +42,15 @@ def calculate_privatekey(e):
     return d
 
 def encrypt(msg, d):
-    msg2 = string_to_binary_number(msg)
-    print(msg2)
-    d2 = string_to_binary_number(d)
+    msg2 = convert_string_tonum(msg2)
+    d2 = convert_string_tonum(d)
     c = pow(msg2,d2)
     c = math.fmod(c,n)
-    return str(msg2)
-encrypt("A", "B")
+    return c
 
+def convert_string_tonum(temp):
+    d = int(temp)
+    return d 
 ##########################################################
 
 
@@ -89,6 +90,8 @@ def createsig(msg,d):
     hash = SHA1(msg)
     signiture = generate_sig(hash,d,n)
     return signiture
+
+
 
 def verify(hash,signiture,e):
 
