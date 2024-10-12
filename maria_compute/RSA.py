@@ -33,11 +33,13 @@ def calculate_privatekey(e):
     k=2
     d=(1+(k*phi))/e
     return d
-def encrypt(msg,d):
-    print("here mesage ",msg)
+
+def encrypt(msg, d):
+    msg = int(msg)
+    d = int(d)
     c = pow(msg,d)
     c = math.fmod(c,n)
-    print("encrypted data = ", c)
+    return str(msg)
 
 
 ##########################################################
