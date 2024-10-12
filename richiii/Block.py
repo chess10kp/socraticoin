@@ -2,7 +2,7 @@
 # Contains the 'Block' data structure
 
 from dataclasses import dataclass
-from win.wincringe import *
+from win.wincringe import * # Transaction class
 
 @dataclass
 class Block:

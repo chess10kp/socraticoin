@@ -1,8 +1,8 @@
 ### Test.py # richiii
 # Creates 3 transactions, adds them to a block, and prints out the block
 
-from richiii.Block import * # Block Class
-from win.wincringe import * # Transaction Class
+from richiii.Block import * # Block class
+from win.wincringe import * # Transaction class
 
 t1 = Transaction("A", "B", 100, 0, 9)
 t2 = Transaction("B", "C", 50,  0, 5)
