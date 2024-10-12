@@ -75,7 +75,6 @@ def createmsg(sender,amount,reciever):
 def createsig(msg,d):
     
     print("encrypt ", msg)
-    msg = encrypt(msg)
     hash = SHA1(msg)
     signiture = generate_sig(hash,d,n)
     return signiture
