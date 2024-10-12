@@ -42,11 +42,11 @@ def calculate_privatekey(e):
     return d
 
 def encrypt(msg, d):
-    msg = string_to_bits(msg)
-    d = string_to_bits(d)
-    c = pow(msg,d)
+    msg2 = string_to_bits(msg)
+    d2 = string_to_bits(d)
+    c = pow(msg2,d2)
     c = math.fmod(c,n)
-    return str(msg)
+    return str(msg2)
 
 
 ##########################################################
