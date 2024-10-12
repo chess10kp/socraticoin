@@ -1,15 +1,15 @@
 class Transaction:
-    def __init__(self, sender, reciever, amount, signed,  gasFee):
+    def __init__(self, sender, reciever, amount, signature,  gasFee):
      self.sender = sender
      self.reciever = reciever
      self.amount = amount
-     self.signed = signed
+     self.signature = signature
      self.gasFee = gasFee
     def __str__(self):
         return str(str(self.sender) + " " + 
                    str(self.reciever) + " " + 
                    str(self.amount) + " " + 
-                   str(self.signed) + " " + 
+                   str(self.signature) + " " + 
                    str(self.gasFee))
 A = []
 def createtrans(Transaction):

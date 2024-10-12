@@ -8,6 +8,13 @@ q = 7
 n = p*q
 e = 2
 phi = (p-1) * (p-q)
+def string_to_bits(s):
+    bits = []
+    for char in s:
+        bin_str = format(ord(char), '08b')
+        bits.append(bin_str)
+        
+    return ''.join(bits)
 
 def gcd(a,h):
     temp  = 0
@@ -35,8 +42,8 @@ def calculate_privatekey(e):
     return d
 
 def encrypt(msg, d):
-    msg = int(msg)
-    d = int(d)
+    msg = string_to_bits(msg)
+    d = string_to_bits(d)
     c = pow(msg,d)
     c = math.fmod(c,n)
     return str(msg)
