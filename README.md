@@ -1,0 +1,2 @@
+# socraticoin
+An educational cryptocurrency 
