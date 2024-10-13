@@ -1,6 +1,6 @@
 from maria_compute.RSA_new import *
 class Transaction:
-    def __init__(self, sender, reciever, amount, signature,  gasFee):
+    def __init__(self, sender, reciever, amount, signature, gasFee):
      self.sender = sender
      self.reciever = reciever
      self.amount = amount
@@ -17,3 +17,6 @@ def createtrans(Transaction):
     p1 = Transaction("Ali", "Bob", 100, 12, 0)
     print(p1)
 x = Transaction("Ali", "Bob", 100, 12, 0)
+
+def unsigned(t):
+    return Transaction(t.sender, t.reciever, t.amount, b"", t.gasFee)

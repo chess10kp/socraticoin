@@ -3,6 +3,7 @@
 # the transactions are signed.
 # The 1st block being the original block
 # and the 2nd block having the correct value for "prevHash"
+# The transactions on each block are validated
 
 from richiii.Block import * # Block class
 from win.wincringe import * # Transaction class
@@ -28,3 +29,5 @@ block2.currHash = SHA256(str(block2))
 
 print("Block 1: " + str(block1))
 print("Block 2: " + str(block2))
+
+verify_sig(aPublic, t1.signature, unsigned(t1))
