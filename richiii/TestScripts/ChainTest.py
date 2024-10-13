@@ -33,7 +33,6 @@ blockChain.submitBlock(MineBlock(Block(1, "", 999, [t1, t2], 100, "A", blockChai
 
 # Print & Verify
 print("Block 0: " + str(blockChain.genesisBlock))
-
 print("Block 1: " + str(blockChain.currBlock))
 verify_sig(aPublic, t1.signature, str(unsigned(t1)).encode('utf-8'))
 verify_sig(bPublic, t2.signature, str(unsigned(t2)).encode('utf-8'))

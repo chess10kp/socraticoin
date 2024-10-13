@@ -3,9 +3,11 @@
 
 from richiii.Block import * # Block class
 from win.wincringe import * # Transaction class
-from maria_compute.RSA_new import * # Signing functions
+from maria_compute.RSA_new import * # Hashing / Signing functions
 
 def MineBlock(block = None, difficulty = 0): # diff = num of 0's starting hash
+	"""Computes the hash for a block with provided difficulty"""
+
 	if (block == None): # If no block provided, return
 		return None
 
@@ -16,7 +18,7 @@ def MineBlock(block = None, difficulty = 0): # diff = num of 0's starting hash
 	while (currHash[0:difficulty] != stringMatch ):
 		block.nonce += 1
 		currHash = SHA256(str(block))
-		print(currHash)
+		print("Nonce: " + str(block.nonce) + " Hash: " + currHash[0:8])
 
 	block.currHash = currHash # Once a valid hash is found, set the hash on the block
 	return block
@@ -27,13 +29,20 @@ class BlockChain:
 	currBlock = None
 	difficulty = 3
 
-	# users = User]
+	# users = User
 
 	# def AddUser(u:User):
 	# 	return
 
 	def submitBlock(self, b):
-		# Verify Block meets difficulty
+		self.VerifyBlock(b)
+
+		# If the above passed, the block is valid, add it to the chain
+		self.currBlock = b
+		return "Block added to chain! Hash: " + b.currHash[0:8]
+
+	def VerifyBlock(self, b):
+		# Verify Block difficulty
 		if(b.currHash[0:self.difficulty] != '0'*self.difficulty):
 			return "Block refused, hash: " + str(b.currHash[0:8]) + " does not meet difficulty: " + str(self.difficulty)
 		# Verify Hash value 
@@ -52,7 +61,3 @@ class BlockChain:
 		# Verify Hash order (if not genesis block)
 		elif(b.prevHash != self.currBlock.currHash):
 			return "Block refused, prevHash: " + b.prevHash[0:8] + " does not match currHash: " + self.currBlock.currHash[0:8]
-
-		# If all the above passed, the block is valid, add it to the chain
-		self.currBlock = b
-		return "Block added to chain! Hash: " + b.currHash[0:8]
