@@ -42,3 +42,7 @@ def verify(signature,public_key):
         ec.ECDSA(utils.Prehashed(chosen_hash))
 
     )
+
+
+def SHA256(msg : str)->str:
+    return hashlib.sha256(msg.encode()).hexdigest()
