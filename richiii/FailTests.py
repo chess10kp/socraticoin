@@ -38,7 +38,7 @@ print(blockChain.submitBlock(Block(0, "0000000hardHash", 0, [], 100, UserA.get_p
 print(blockChain.submitBlock(MineBlock(Block(999, "", 0, [], 100, UserA.get_public_str(), "Genesis_Block"), blockChain.difficulty)))
 
 # Invalid block 5: Invalid Block Order
-blockChain.submitBlock(MineBlock(Block(0, "", 0, [], 100, UserA.get_public_str(), "Genesis_Block"), blockChain.difficulty))
+print(blockChain.submitBlock(MineBlock(Block(0, "", 0, [], 100, UserA.get_public_str(), "Genesis_Block"), blockChain.difficulty)))
 print(blockChain.submitBlock(MineBlock(Block(8, "", 0, [], 100, UserA.get_public_str(), blockChain.currBlock.prevHash), blockChain.difficulty)))
 
 # Invalid block 6: Invalid Hash Order

@@ -10,7 +10,7 @@ from maria_compute.wallet  import * # Wallets
 def HashBlock(block:Block):
 	"""Computes a hash for a block from it's data"""
 	block.currHash = SHA256(str(block.unHashed())) 
-	print("Hashing Block " + str(block.blockNumber) + ", Nonce: " + str(block.nonce) + " Hash: " + block.currHash[0:8])
+	# print("Hashing Block " + str(block.blockNumber) + ", Nonce: " + str(block.nonce) + " Hash: " + block.currHash[0:8])
 	return block
 
 def MineBlock(block:Block = None, difficulty = 0):
@@ -41,12 +41,12 @@ class BlockChain:
 		self.blockList : list[Block] = []
 
 	def create_new_user(self):
-		a = user_wallete(0)
+		a = user_wallete()
 		self.Users.append(a)
 		return a
 
 	def submitBlock(self, b):
-		if not (self.VerifyBlock(b)):
+		if (self.VerifyBlock(b)!=""):
 			return self.VerifyBlock(b)
 
 		# If the above passed, the block is valid, add it to the chain
@@ -57,20 +57,21 @@ class BlockChain:
 	def VerifyBlock(self, b):
 		# Verify Block difficulty
 		if(b.currHash[0:self.difficulty] != '0'*self.difficulty):
-			return "Block refused, hash: " + str(b.currHash[0:8]) + " does not meet difficulty: " + str(self.difficulty)
+			return f"Block refused, hash: " + str(b.currHash[0:8]) + " does not meet difficulty: " + str(self.difficulty)
 		# Verify Hash value 
 		hashedBlock = HashBlock(Block(b.blockNumber, b"", b.nonce, b.transactions, b.blockReward, b.rewardAddress, b.prevHash)) 
 		if( hashedBlock.currHash != b.currHash):
-			return "Block refused, hash: " + str(b.currHash[0:8]) + " does not match hash: " + str(hashedBlock.currHash[0:8]) + " (Nonce: " + str(b.nonce) + ")"
+			return f"Block refused, hash: " + str(b.currHash[0:8]) + " does not match hash: " + str(hashedBlock.currHash[0:8]) + " (Nonce: " + str(b.nonce) + ")"
 		# Validate Block Transactions
-		for t in b.transactions: 
-			if (False): # Cannot verify transactions cause we can't get the key CLASS type from the key STRING type
-				return "Block refused, unverifiable transaction: " + str(t)
+		# for t in b.transactions: 
+		# 	if (False): # Cannot verify transactions cause we can't get the key CLASS type from the key STRING type
+		# 		return "Block refused, unverifiable transaction: " + str(t)
 		# Verify Genesis Block
 		if(self.genesisBlock == None and b.blockNumber != 0):
 			return "Block refused, blockNumber: " + str(b.blockNumber) + " must be 0 for the Genesis Block."
 		elif(self.genesisBlock == None and b.blockNumber == 0):
 			self.genesisBlock = b
+			return "" # Block is valid
 		# Verify Block order (if not genesis block)
 		elif(b.blockNumber != (self.currBlock.blockNumber + 1)):
 			return "Block refused, blockNumber: " + str(b.blockNumber) + " does not follow " + str(self.currBlock.blockNumber)
@@ -78,7 +79,7 @@ class BlockChain:
 		elif(b.prevHash != self.currBlock.currHash):
 			return "Block refused, prevHash: " + b.prevHash[0:8] + " does not match currHash: " + self.currBlock.currHash[0:8]
 		
-		return True # Block is valid
+		return "" # Block is valid
 
 	def ClearChain(): # clears the blockchain
 		self.blockList = []
