@@ -20,7 +20,7 @@ def RSA_sig(pk,dat):
 
     signature = pk.sign(
 
-        data,
+        dat,
 
         ec.ECDSA(hashes.SHA256())
 
