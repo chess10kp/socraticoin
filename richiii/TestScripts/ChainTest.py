@@ -19,27 +19,29 @@ UserC = user_wallete()
 UserA.get_public_str_full()
 
 # Create example transactions
-t1 = Transaction(UserA.get_public_str(), UserB.get_public_str(), 100, 10)
-t1.signature = RSA_sig(UserA.get_private_key(), str(t1).encode('utf-8') )
-t2 = Transaction(UserB.get_public_str(), UserC.get_public_str(), 50, 5)
-t2.signature = RSA_sig(UserB.get_private_key(), str(t2).encode('utf-8') )
-t3 = Transaction(UserC.get_public_str(), UserA.get_public_str(), 25, 15)
-t3.signature = RSA_sig(UserC.get_private_key(), str(t3).encode('utf-8') )
+t1 = (Transaction(UserA.get_public_str(), UserB.get_public_str(), 100, 10)).Sign(UserA.get_private_key())
+t2 = (Transaction(UserB.get_public_str(), UserC.get_public_str(), 50, 5)).Sign(UserB.get_private_key())
+t3 = (Transaction(UserC.get_public_str(), UserA.get_public_str(), 25, 15)).Sign(UserC.get_private_key())
+t4 = (Transaction(UserB.get_public_str(), UserA.get_public_str(), 50, 5)).Sign(UserB.get_private_key())
+t5 = (Transaction(UserA.get_public_str(), UserC.get_public_str(), 5, 1)).Sign(UserA.get_private_key())
 
 # Submit transactions to the transaction queue
-blockChain.transactionQueue.append(t1)
-blockChain.transactionQueue.append(t2)
-blockChain.transactionQueue.append(t3)
+# blockChain.transactionQueue.append(t1)
+# blockChain.transactionQueue.append(t2)
+# blockChain.transactionQueue.append(t3)
 
 # Create Genesis Block
 blockChain.submitBlock(MineBlock(Block(0, "", 0, [], 100, UserA.get_public_str(), "Genesis_Block"), blockChain.difficulty))
 
-# Create test block with transactions
+# Create test block 1&2 with transactions
 blockChain.submitBlock(MineBlock(Block(1, "", 0, [t1, t2, t3], 100, UserA.get_public_str(), blockChain.currBlock.currHash), blockChain.difficulty))
+blockChain.submitBlock(MineBlock(Block(2, "", 0, [t4, t5], 100, UserA.get_public_str(), blockChain.currBlock.currHash), blockChain.difficulty))
 
 # Print & Verify
-print("Block 0: " + str(blockChain.genesisBlock))
-print("Block 1: " + str(blockChain.currBlock))
+for block in blockChain.blockList:
+	print("Block " + str(block.blockNumber) + ": " + str(block))
 verify_sig(UserA.get_public_key(), t1.signature, str(unsigned(t1)).encode('utf-8'))
 verify_sig(UserB.get_public_key(), t2.signature, str(unsigned(t2)).encode('utf-8'))
 verify_sig(UserC.get_public_key(), t3.signature, str(unsigned(t3)).encode('utf-8'))
+verify_sig(UserB.get_public_key(), t4.signature, str(unsigned(t4)).encode('utf-8'))
+verify_sig(UserA.get_public_key(), t5.signature, str(unsigned(t5)).encode('utf-8'))

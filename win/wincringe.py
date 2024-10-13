@@ -1,4 +1,5 @@
 from maria_compute.RSA_new import *
+
 class Transaction:
     def __init__(self, sender, reciever, amount, gasFee):
         self.sender = sender
@@ -13,8 +14,13 @@ class Transaction:
                str(self.amount) + " Fee: " + 
                str(self.gasFee) +  " Sig: " +
                str(self.signature.hex())[-4:])
+    
+    def Sign(self, privKey): # Signs the transaction with the given private key
+        self.signature = RSA_sig(privKey, str(self).encode('utf-8'))
+        return self
 
-def unsigned(t):
+
+def unsigned(t): 
     return Transaction(t.sender, t.reciever, t.amount, t.gasFee)
 
 # A = []

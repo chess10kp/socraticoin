@@ -59,10 +59,10 @@ def SHA256(msg : str)->str:
 
 ##################### test caseas
 
-private_key,public_key = gneratebothkey()
+# private_key,public_key = gneratebothkey()
 
 
 
-data = b'here'
-sig = RSA_sig(private_key,data)
-verify_sig(public_key,sig,data)
+# data = b'here'
+# sig = RSA_sig(private_key,data)
+# verify_sig(public_key,sig,data)

@@ -1,5 +1,5 @@
 ### Chain.py # richiii
-# Contains classes and funcs for making implementing blockchain
+# Contains classes and funcs for implementing blockchain
 
 from richiii.Block import * # Block class
 from win.wincringe import * # Transaction class
@@ -34,10 +34,12 @@ class BlockChain:
 	transactionQueue : list[Transaction] = [] # Transactions waiting to be added to blocks
 	genesisBlock : Block = None # First block in the chain
 	currBlock    : Block = None # Last block in the chain
-	difficulty   : int   = 3    # How computationally hard must hashes be?
+	difficulty   : int   = 3    # How computationally hard must hashes be? (36x exponential)
 
-	# For convienience, users are packaged with the blockchain
-	Users = list[user_wallete]
+
+	# For convienience, users and block references are packaged with the blockchain class
+	Users : list[user_wallete] = []
+	blockList : list[Block] = []
 
 	def AddUser(u:user_wallete):
 		Users.append(u)
@@ -46,6 +48,7 @@ class BlockChain:
 		self.VerifyBlock(b)
 
 		# If the above passed, the block is valid, add it to the chain
+		self.blockList.append(b)
 		self.currBlock = b
 		return "Block added to chain! Hash: " + b.currHash[0:8]
 
