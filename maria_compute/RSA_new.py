@@ -39,7 +39,7 @@ def verify_sig(public_key,signature,data):
         print("invalid")
 
 def SHA256(msg : str)->str:
-    print(type(hashlib.sha256(msg.encode()).hexdigest()))
+    # print(type(hashlib.sha256(msg.encode()).hexdigest()))
     return hashlib.sha256(msg.encode()).hexdigest()
 
 
