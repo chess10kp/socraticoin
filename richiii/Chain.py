@@ -45,7 +45,8 @@ class BlockChain:
 		Users.append(u)
 
 	def submitBlock(self, b):
-		self.VerifyBlock(b)
+		if not (self.VerifyBlock(b)):
+			return self.VerifyBlock(b)
 
 		# If the above passed, the block is valid, add it to the chain
 		self.blockList.append(b)
@@ -62,10 +63,12 @@ class BlockChain:
 			return "Block refused, hash: " + str(b.currHash[0:8]) + " does not match hash: " + str(hashedBlock.currHash[0:8]) + " (Nonce: " + str(b.nonce) + ")"
 		# Validate Block Transactions
 		for t in b.transactions: 
-			if (False):
+			if (False): # Cannot verify transactions cause we can't get the key CLASS type from the key STRING type
 				return "Block refused, unverifiable transaction: " + str(t)
 		# Verify Genesis Block
-		if(self.genesisBlock == None):
+		if(self.genesisBlock == None and b.blockNumber != 0):
+			return "Block refused, blockNumber: " + str(b.blockNumber) + " must be 0 for the Genesis Block."
+		elif(self.genesisBlock == None and b.blockNumber == 0):
 			self.genesisBlock = b
 		# Verify Block order (if not genesis block)
 		elif(b.blockNumber != (self.currBlock.blockNumber + 1)):
@@ -73,3 +76,5 @@ class BlockChain:
 		# Verify Hash order (if not genesis block)
 		elif(b.prevHash != self.currBlock.currHash):
 			return "Block refused, prevHash: " + b.prevHash[0:8] + " does not match currHash: " + self.currBlock.currHash[0:8]
+		
+		return 1 # Block is valid
