@@ -10,23 +10,26 @@ from richiii.Chain import * # MineBlock()
 from win.wincringe import * # Transaction class
 from maria_compute.RSA_new import * # Signing functions
 
+# Create a blockchain and 2 users
+blockChain = BlockChain()
 aPrivate, aPublic = gneratebothkey()
 bPrivate, bPublic = gneratebothkey()
 
+# Create example transactions
 t1 = Transaction("A", "B", 100, b"", 10)
 t1.signature = RSA_sig(aPrivate, str(t1).encode('utf-8') )
-
 t2 = Transaction("B", "C", 50, b"", 5)
 t2.signature = RSA_sig(bPrivate, str(t2).encode('utf-8') )
 
-print("T1: " + str(t1))
-print("T2: " + str(t2))
+# Submit transactions to the transaction queue
+blockChain.transactionQueue.append(t1)
+blockChain.transactionQueue.append(t2)
 
-block1 = Block(0, "", 999, [t1], 100, "A", "Original_Block")
-MineBlock(block1, 4)
+# Create Original Block
+blockChain.submitBlock(MineBlock(Block(0, "", 0, [], 100, "A", "Original_Block"), 4))
 
 block2 = Block(1, "", 999, [t2], 100, "A", block1.currHash)
-MineBlock(block2, 2)
+MineBlock(block2, 3)
 
 print("Block 1: " + str(block1))
 verify_sig(aPublic, t1.signature, str(unsigned(t1)).encode('utf-8'))

@@ -26,10 +26,10 @@ class Block:
 
 	def __str__(self):
 		s = ( str(self.blockNumber)  + " "
-			+     self.currHash[0:4] + " "
+			+     self.currHash[0:8] + " "
 			+ str(self.blockReward)  + " "
 			+     self.rewardAddress + " "
-			+     self.prevHash[0:4] + " "
+			+     self.prevHash[0:8] + " "
 			+ str(self.nonce)        + "\n" )
 		
 		for t in self.data:
