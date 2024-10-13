@@ -10,16 +10,17 @@ from richiii.Chain import * # MineBlock()
 from win.wincringe import * # Transaction class
 from maria_compute.RSA_new import * # Signing functions
 
-# Create a blockchain and 2 users
+# Create a blockchain and 3 users
 blockChain = BlockChain()
-aPrivate, aPublic = gneratebothkey()
-bPrivate, bPublic = gneratebothkey()
+UserA = user_wallete()
+UserB = user_wallete()
+UserC = user_wallete()
 
 # Create example transactions
-t1 = Transaction("A", "B", 100, b"", 10)
-t1.signature = RSA_sig(aPrivate, str(t1).encode('utf-8') )
-t2 = Transaction("B", "C", 50, b"", 5)
-t2.signature = RSA_sig(bPrivate, str(t2).encode('utf-8') )
+t1 = Transaction(UserA.get_public_key_str(), UserB.get_public_key_str, 100, b"", 10)
+t1.signature = RSA_sig(UserA.get_private_key(), str(t1).encode('utf-8') )
+t2 = Transaction(UserB.get_public_key_str(), UserC.get_public_key_str(), 50, b"", 5)
+t2.signature = RSA_sig(UserB.get_private_key(), str(t2).encode('utf-8') )
 
 # Submit transactions to the transaction queue
 blockChain.transactionQueue.append(t1)
@@ -34,5 +35,5 @@ blockChain.submitBlock(MineBlock(Block(1, "", 999, [t1, t2], 100, "A", blockChai
 # Print & Verify
 print("Block 0: " + str(blockChain.genesisBlock))
 print("Block 1: " + str(blockChain.currBlock))
-verify_sig(aPublic, t1.signature, str(unsigned(t1)).encode('utf-8'))
-verify_sig(bPublic, t2.signature, str(unsigned(t2)).encode('utf-8'))
+verify_sig(UserA.get_public_key(), t1.signature, str(unsigned(t1)).encode('utf-8'))
+verify_sig(UserB.get_public_key(), t2.signature, str(unsigned(t2)).encode('utf-8'))

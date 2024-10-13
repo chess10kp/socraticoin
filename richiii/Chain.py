@@ -4,6 +4,7 @@
 from richiii.Block import * # Block class
 from win.wincringe import * # Transaction class
 from maria_compute.RSA_new import * # Hashing / Signing functions
+from maria_compute.wallet  import * # Wallets
 
 def MineBlock(block = None, difficulty = 0): # diff = num of 0's starting hash
 	"""Computes the hash for a block with provided difficulty"""
@@ -29,10 +30,11 @@ class BlockChain:
 	currBlock = None
 	difficulty = 3
 
-	# users = User
+	# For convienience, users are packaged with the blockchain
+	Users = list[user_wallete]
 
-	# def AddUser(u:User):
-	# 	return
+	def AddUser(u:user_wallete):
+		Users.append(u)
 
 	def submitBlock(self, b):
 		self.VerifyBlock(b)
