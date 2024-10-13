@@ -16,4 +16,3 @@ def createtrans(Transaction):
     p1 = Transaction("Ali", "Bob", 100, 12, 0)
     print(p1)
 x = Transaction("Ali", "Bob", 100, 12, 0)
-print(x.__str__())
