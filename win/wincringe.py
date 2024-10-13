@@ -14,10 +14,20 @@ class Transaction:
                str(self.amount) + " Fee: " + 
                str(self.gasFee) +  " Sig: " +
                str(self.signature.hex())[-4:])
+
+    def string_full(self):
+        return(str(self.sender)[:] + " -> " + 
+               str(self.reciever)[:] + " Amt: " + 
+               str(self.amount) + " Fee: " + 
+               str(self.gasFee) +  " Sig: " +
+               str(self.signature.hex())[:])
     
     def Sign(self, privKey): # Signs the transaction with the given private key
         self.signature = RSA_sig(privKey, str(self).encode('utf-8'))
         return self
+
+    def Verify(self, pubkey): # Verifies a signed transaction with a public key
+        verify_sig(pubkey, self.signature, str(unsigned(self)).encode('utf-8'))
 
 
 def unsigned(t): 

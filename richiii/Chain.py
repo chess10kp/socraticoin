@@ -57,8 +57,9 @@ class BlockChain:
 		if(b.currHash[0:self.difficulty] != '0'*self.difficulty):
 			return "Block refused, hash: " + str(b.currHash[0:8]) + " does not meet difficulty: " + str(self.difficulty)
 		# Verify Hash value 
-		# if (tempblock.currHash hashed with b.currhash removed != currhash)
-			# return "Block refused, hash: " + str(b.currHash[0:8]) + " does not match hash: " + str(newBlock.currHash[0:8]) + " (Nonce: " + str(b.nonce) + ")"
+		hashedBlock = HashBlock(Block(b.blockNumber, b"", b.nonce, b.transactions, b.blockReward, b.rewardAddress, b.prevHash)) 
+		if( hashedBlock.currHash != b.currHash):
+			return "Block refused, hash: " + str(b.currHash[0:8]) + " does not match hash: " + str(hashedBlock.currHash[0:8]) + " (Nonce: " + str(b.nonce) + ")"
 		# Validate Block Transactions
 		# for loop t in transactionlist 
 			# if t sign cannot be verified by t.sender (which is the pubkey)

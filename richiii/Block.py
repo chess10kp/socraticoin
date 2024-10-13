@@ -5,14 +5,14 @@ from win.wincringe import Transaction # Transaction class
 
 class Block:
 	"""Block in the Blockchain"""
-	def __init__(self,a,b,c,d,e,f,g):
-		self.blockNumber   = a
-		self.currHash      = b
-		self.nonce         = c
-		self.transactions  = d
-		self.blockReward   = e
-		self.rewardAddress = f
-		self.prevHash      = g
+	def __init__(self,blockNumber,currHash,nonce,transactions,blockReward,rewardAddress,prevHash):
+		self.blockNumber   = blockNumber
+		self.currHash      = currHash
+		self.nonce         = nonce
+		self.transactions  = transactions
+		self.blockReward   = blockReward
+		self.rewardAddress = rewardAddress
+		self.prevHash      = prevHash
 
 	blockNumber:   int               # The number of this block 
 	currHash:      str               # The hash of this block
