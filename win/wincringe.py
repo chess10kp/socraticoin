@@ -6,10 +6,10 @@ class Transaction:
      self.signature = signature
      self.gasFee = gasFee
     def __str__(self):
-        return str(str(self.sender) + " " + 
-                   str(self.reciever) + " " + 
-                   str(self.amount) + " " + 
-                   str(self.signature) + " " + 
+        return str(str(self.sender) + " -> " + 
+                   str(self.reciever) + " Amt: " + 
+                   str(self.amount) + " Fee: " + 
+                   str(self.signature) + " Sig: " + 
                    str(self.gasFee))
 A = []
 def createtrans(Transaction):
