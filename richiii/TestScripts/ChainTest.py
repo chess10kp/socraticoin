@@ -25,14 +25,15 @@ t2.signature = RSA_sig(bPrivate, str(t2).encode('utf-8') )
 blockChain.transactionQueue.append(t1)
 blockChain.transactionQueue.append(t2)
 
-# Create Original Block
-blockChain.submitBlock(MineBlock(Block(0, "", 0, [], 100, "A", "Original_Block"), 4))
+# Create Genesis Block
+blockChain.submitBlock(MineBlock(Block(0, "", 0, [], 100, "A", "Genesis_Block"), blockChain.difficulty))
 
-block2 = Block(1, "", 999, [t2], 100, "A", block1.currHash)
-MineBlock(block2, 3)
+# Create test block with transactions
+blockChain.submitBlock(MineBlock(Block(1, "", 999, [t1, t2], 100, "A", blockChain.currBlock.currHash), blockChain.difficulty))
 
-print("Block 1: " + str(block1))
+# Print & Verify
+print("Block 0: " + str(blockChain.genesisBlock))
+
+print("Block 1: " + str(blockChain.currBlock))
 verify_sig(aPublic, t1.signature, str(unsigned(t1)).encode('utf-8'))
-
-print("Block 2: " + str(block2))
 verify_sig(bPublic, t2.signature, str(unsigned(t2)).encode('utf-8'))

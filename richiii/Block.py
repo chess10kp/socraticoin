@@ -27,12 +27,12 @@ class Block:
 	def __str__(self):
 		s = ( str(self.blockNumber)  + " "
 			+     self.currHash[0:8] + " "
+			+ str(self.nonce)        + " "
 			+ str(self.blockReward)  + " "
 			+     self.rewardAddress + " "
-			+     self.prevHash[0:8] + " "
-			+ str(self.nonce)        + "\n" )
+			+     self.prevHash[0:8] + "\n" )
 		
 		for t in self.data:
-			s += ("  " + str(t))
+			s += ("  " + str(t) + "\n")
 
 		return s
