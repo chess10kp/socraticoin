@@ -17,11 +17,11 @@ UserB = user_wallete()
 UserC = user_wallete()
 
 # Create example transactions
-t1 = Transaction(UserA.get_public_key_str(), UserB.get_public_key_str, 100, b"", 10)
+t1 = Transaction(UserA.get_public_str(), UserB.get_public_str(), 100, b"", 10)
 t1.signature = RSA_sig(UserA.get_private_key(), str(t1).encode('utf-8') )
-t2 = Transaction(UserB.get_public_key_str(), UserC.get_public_key_str(), 50, b"", 5)
+t2 = Transaction(UserB.get_public_str(), UserC.get_public_str(), 50, b"", 5)
 t2.signature = RSA_sig(UserB.get_private_key(), str(t2).encode('utf-8') )
-t3 = Transaction(UserC.get_public_key_str(), UserA.get_public_key_str(), 25, b"", 15)
+t3 = Transaction(UserC.get_public_str(), UserA.get_public_str(), 25, b"", 15)
 t3.signature = RSA_sig(UserC.get_private_key(), str(t3).encode('utf-8') )
 
 # Submit transactions to the transaction queue
@@ -30,10 +30,10 @@ blockChain.transactionQueue.append(t2)
 blockChain.transactionQueue.append(t3)
 
 # Create Genesis Block
-blockChain.submitBlock(MineBlock(Block(0, "", 0, [], 100, "A", "Genesis_Block"), blockChain.difficulty))
+blockChain.submitBlock(MineBlock(Block(0, "", 0, [], 100, UserA.get_public_str(), "Genesis_Block"), blockChain.difficulty))
 
 # Create test block with transactions
-blockChain.submitBlock(MineBlock(Block(1, "", 999, [t1, t2, t3], 100, "A", blockChain.currBlock.currHash), blockChain.difficulty))
+blockChain.submitBlock(MineBlock(Block(1, "", 0, [t1, t2, t3], 100, UserA.get_public_str(), blockChain.currBlock.currHash), blockChain.difficulty))
 
 # Print & Verify
 print("Block 0: " + str(blockChain.genesisBlock))
