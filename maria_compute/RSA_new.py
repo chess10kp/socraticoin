@@ -24,20 +24,29 @@ def RSA_sig(pk,dat):
     #####print("signiture is this: ",signature)
     return signature
 
+##########################3
+def verify_sig(public_key,signature,data):
 
-def verify(signature,public_key,hash):
-  
-    public_key.verify(
+    try:
+        public_key.verify(signature,data,ec.ECDSA(hashes.SHA256()))
 
-        signature,
-
-        hash,
-
-        ec.ECDSA(utils.Prehashed(hash))
-
-    )
-
+        ballon= True
+    except Exception as e:
+       ballon =  False
+    if ballon == True:
+        print("valid")
+    else:
+        print("invalid")
 
 def SHA256(msg : str)->str:
+    print(type(hashlib.sha256(msg.encode()).hexdigest()))
     return hashlib.sha256(msg.encode()).hexdigest()
 
+
+##################### test caseas
+'''
+private_key,public_key = gneratebothkey()
+data = b'here'
+sig = RSA_sig(private_key,data)
+verify_sig(public_key,sig,data)
+'''
