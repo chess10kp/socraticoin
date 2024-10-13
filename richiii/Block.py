@@ -33,7 +33,7 @@ class Block:
 		for t in self.transactions:
 			s += ("  " + str(t) + "\n")
 
-		return s
+		return s[:-1] # Dont include the final newline
 
 	def unHashed(self): # Strips the hash and returns the block
 		self.currHash = ""

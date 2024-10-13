@@ -16,11 +16,11 @@ UserB = user_wallete()
 UserC = user_wallete()
 
 # Create example transactions
-t1 = (Transaction(UserA.get_public_key(), UserB.get_public_str(), 100, 10)).Sign(UserA.get_private_key())
-t2 = (Transaction(UserB.get_public_key(), UserC.get_public_str(), 50, 5)  ).Sign(UserB.get_private_key())
-t3 = (Transaction(UserC.get_public_key(), UserA.get_public_str(), 25, 15) ).Sign(UserC.get_private_key())
-t4 = (Transaction(UserB.get_public_key(), UserA.get_public_str(), 50, 5)  ).Sign(UserB.get_private_key())
-t5 = (Transaction(UserA.get_public_key(), UserC.get_public_str(), 5, 1)   ).Sign(UserA.get_private_key())
+t1 = (Transaction(UserA.get_public_str(), UserB.get_public_str(), 100, 10)).Sign(UserA.get_private_key())
+t2 = (Transaction(UserB.get_public_str(), UserC.get_public_str(), 50, 5)  ).Sign(UserB.get_private_key())
+t3 = (Transaction(UserC.get_public_str(), UserA.get_public_str(), 25, 15) ).Sign(UserC.get_private_key())
+t4 = (Transaction(UserB.get_public_str(), UserA.get_public_str(), 50, 5)  ).Sign(UserB.get_private_key())
+t5 = (Transaction(UserA.get_public_str(), UserC.get_public_str(), 5, 1)   ).Sign(UserA.get_private_key())
 
 # Submit transactions to the transaction queue
 # blockChain.transactionQueue.append(t1)

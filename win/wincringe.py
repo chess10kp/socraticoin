@@ -1,22 +1,22 @@
 from maria_compute.RSA_new import *
 
 class Transaction:
-    def __init__(self, senderPubKey, reciever, amount, gasFee):
-        self.senderPubKey = senderPubKey
+    def __init__(self, sender, reciever, amount, gasFee):
+        self.sender = sender
         self.reciever = reciever
         self.amount = amount
         self.signature = b""
         self.gasFee = gasFee
     
     def __str__(self):
-        return(str(pub_to_str(self.senderPubKey))[-7:-3] + " -> " + 
+        return(str(self.sender)[:4] + " -> " + 
                str(self.reciever)[:4] + " Amt: " + 
                str(self.amount) + " Fee: " + 
                str(self.gasFee) +  " Sig: " +
                str(self.signature.hex())[-4:])
 
     def string_full(self):
-        return(str(pub_to_str(self.senderPubKey))[-25:-3] + " -> " + 
+        return(str(self.sender)[:] + " -> " + 
                str(self.reciever)[:] + " Amt: " + 
                str(self.amount) + " Fee: " + 
                str(self.gasFee) +  " Sig: " +
@@ -31,7 +31,7 @@ class Transaction:
 
 
 def unsigned(t): 
-    return Transaction(t.senderPubKey, t.reciever, t.amount, t.gasFee)
+    return Transaction(t.sender, t.reciever, t.amount, t.gasFee)
 
 # A = []
 # def createtrans(Transaction):   
