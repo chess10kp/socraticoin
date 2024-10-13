@@ -59,12 +59,14 @@ const HomePage = () => {
   const [send, setSend] = useState("");
   const [amount, setAmount] = useState(0);
   const [sign, setSign] = useState("");
+  const [gas, setGas] = useState(0);
 
   const handleAddress = (address: string) => setAddress(address);
   const handleAmount = (amount: number) => setCurrentAmount(amount);
   const handleSend = (send: string) => setSend(send);
   const handleSendAmount = (amount: number) => setAmount(amount);
   const handleSign = (sign: string) => setSign(sign);
+  const handleGas = (gas: number) => setGas(gas);
 
   return (
     <div>
@@ -104,6 +106,12 @@ const HomePage = () => {
               label="Sign"
               placeholder="private key"
             ></InputForm>
+            <InputForm
+              value={gas.toString()}
+              updateCallback={handleGas}
+              label="Gas"
+              placeholder="Gas"
+            />
           </div>
           <div className="flex justify-center align-center bg-primary">
             <button type="submit" className={buttonClasses}>
@@ -219,10 +227,17 @@ const MinerPage = () => {
   const [hash, setHash] = useState("");
   const [nonce, setNonce] = useState("");
   const [prev, setPrev] = useState("");
+  const [number, setNumber] = useState(0);
+  const [reward, setReward] = useState(0);
+  const [rewardAddress, setRewardAddress] = useState("");
 
   const handleHash = (hash: string) => setHash(hash);
   const handleNonce = (nonce: string) => setNonce(nonce);
   const handlePrev = (prev: string) => setPrev(prev);
+  const handleNumber = (number: number) => setNumber(number);
+  const handleReward = (reward: number) => setReward(reward);
+  const handleRewardAddress = (rewardAddress: string) =>
+    setRewardAddress(rewardAddress);
 
   return (
     <div className="">
@@ -246,6 +261,25 @@ const MinerPage = () => {
           label="Prev"
           placeholder="$10"
         ></InputForm>
+        <InputForm
+          value={number.toString()}
+          updateCallback={handleNumber}
+          label="Number"
+          placeholder="number"
+        />
+        <InputForm
+          value={reward.toString()}
+          updateCallback={handleReward}
+          label="Reward"
+          placeholder="reward"
+        />
+        <InputForm
+          value={rewardAddress}
+          updateCallback={handleRewardAddress}
+          label="Reward Address"
+          placeholder="reward address"
+        />
+
         <MinerTable />
       </div>
     </div>
