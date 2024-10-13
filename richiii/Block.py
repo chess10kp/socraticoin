@@ -26,9 +26,9 @@ class Block:
 
 	def __str__(self):
 		return ( str(self.blockNumber)  + " "
-			   +     self.currHash      + " "
+			   +     self.currHash[0:4] + " "
 			   + str(self.blockReward)  + " "
 			   +     self.rewardAddress + " "
-			   +     self.prevHash      + " "
+			   +     self.prevHash[0:4] + " "
 			   + str(self.nonce)        + "\n"
 			   + str(self.data)         + "\n" )
