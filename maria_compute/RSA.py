@@ -41,8 +41,8 @@ def calculate_privatekey(e):
     d=(1+(k*phi))/e
     return d
 
-def encrypt(msg, d):
-    msg2 = convert_string_tonum(msg2)
+def encrypt(msg,d):
+    msg2 = convert_string_tonum(msg)
     d2 = convert_string_tonum(d)
     c = pow(msg2,d2)
     c = math.fmod(c,n)
