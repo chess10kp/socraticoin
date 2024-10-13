@@ -12,7 +12,7 @@ class Transaction:
                    str(self.reciever) + " Amt: " + 
                    str(self.amount) + " Fee: " + 
                    str(self.gasFee) +  " Sig: " +
-                   str(self.signature[0:4]))
+                   str(self.signature[2:6]))
 A = []
 def createtrans(Transaction):
     p1 = Transaction("Ali", "Bob", 100, 12, 0)
