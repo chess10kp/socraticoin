@@ -10,7 +10,13 @@ def gneratebothkey():
         ec.SECP384R1()
     )
     public_key = private_key.public_key()
-    return private_key, public_key
+
+    privKeyBytes = private_key.private_bytes()
+    pubKeyBytes = public_key.public_bytes()
+
+    privKeyStr = str(privKeyBytes)
+    pubKeyStr = str(pubKeyBytes)
+    return privKeyStr, pubKeyStr
 
 def RSA_sig(pk,dat):
 

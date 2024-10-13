@@ -10,10 +10,7 @@ class user_wallete:
         return self.public_key
     def get_private_key(self):
         return self.private_key
-    def get_public_key_str(self):
-        return str(self.public_key)
-    def get_private_key_str(self):
-        return str(self.private_key)
+    
     def get_crypto(self):
         temp= int(self.ammount_of_crypto)
         return temp
