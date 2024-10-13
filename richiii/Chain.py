@@ -78,3 +78,9 @@ class BlockChain:
 			return "Block refused, prevHash: " + b.prevHash[0:8] + " does not match currHash: " + self.currBlock.currHash[0:8]
 		
 		return True # Block is valid
+
+	def ClearChain(): # clears the blockchain
+		self.blockList = []
+		self.transactionQueue = []
+		self.currBlock = None
+		self.genesisBlock = None
