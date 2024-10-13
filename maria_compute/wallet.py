@@ -2,7 +2,7 @@
 from maria_compute.RSA_new import * 
 
 class user_wallete:
-    def __init__(self,ammount_of_crypto=0):
+    def __init__(self):
         self.private_key, self.public_key = gneratebothkey()
         self.ammount_of_crypto = ammount_of_crypto
 

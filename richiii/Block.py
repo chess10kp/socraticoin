@@ -1,10 +1,8 @@
 ### Block.py # richiii
 # Contains the 'Block' data structure
 
-from dataclasses   import dataclass # @dataclass
-from win.wincringe import *         # Transaction class
+from win.wincringe import Transaction # Transaction class
 
-@dataclass
 class Block:
 	"""Block in the Blockchain"""
 	def __init__(self,a,b,c,d,e,f,g):
@@ -36,3 +34,7 @@ class Block:
 			s += ("  " + str(t) + "\n")
 
 		return s
+
+	def unHashed(): # Strips the hash and returns the block
+		self.currHash = ""
+		return self

@@ -6,29 +6,37 @@ from win.wincringe import * # Transaction class
 from maria_compute.RSA_new import * # Hashing / Signing functions
 from maria_compute.wallet  import * # Wallets
 
-def MineBlock(block = None, difficulty = 0): # diff = num of 0's starting hash
-	"""Computes the hash for a block with provided difficulty"""
+
+def HashBlock(block:Block):
+	"""Computes a hash for a block from it's data"""
+	block.currHash = SHA256(str(block.unHashed())) 
+	print("Nonce: " + str(block.nonce) + " Hash: " + currHash[0:8])
+	return block
+
+def MineBlock(block:Block = None, difficulty = 0):
+	"""Computes a correct hash for a block, according to the provided difficulty"""
 
 	if (block == None): # If no block provided, return
 		return None
 
-	# Compute hashes until find one that meets difficulty requirements
-	stringMatch = '0'*difficulty
-	block.nonce = 0
-	currHash = ""
-	while (currHash[0:difficulty] != stringMatch ):
-		block.nonce += 1
-		currHash = SHA256(str(block))
-		print("Nonce: " + str(block.nonce) + " Hash: " + currHash[0:8])
+	# difficulty = num of 0's the hash should start with
+	difficultyString = '0'*difficulty 
 
-	block.currHash = currHash # Once a valid hash is found, set the hash on the block
+	# Compute hashes until one meets the difficulty requirement
+	block.nonce = 0
+	while(block.currHash[0:difficulty] != difficultyString): 
+		HashBlock(block)
+		block.nonce += 1
+
+	# Once a valid hash is found, apply the hash to the block
+	block.currHash = currHash 
 	return block
 
 class BlockChain:
-	transactionQueue : list[Transaction] = []
-	genesisBlock = None
-	currBlock = None
-	difficulty = 3
+	transactionQueue : list[Transaction] = [] # Transactions waiting to be added to blocks
+	genesisBlock : Block = None # First block in the chain
+	currBlock    : Block = None # Last block in the chain
+	difficulty   : int   = 3    # How computationally hard must hashes be?
 
 	# For convienience, users are packaged with the blockchain
 	Users = list[user_wallete]
