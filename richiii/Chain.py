@@ -31,18 +31,17 @@ def MineBlock(block:Block = None, difficulty = 0):
 	return block
 
 class BlockChain:
-	transactionQueue : list[Transaction] = [] # Transactions waiting to be added to blocks
-	genesisBlock : Block = None # First block in the chain
-	currBlock    : Block = None # Last block in the chain
-	difficulty   : int   = 3    # How computationally hard must hashes be? (36x exponential)
-
-
-	# For convienience, users and block references are packaged with the blockchain class
-	Users : list[user_wallete] = []
-	blockList : list[Block] = []
+	def __init__(self):
+		self.transactionQueue : list[Transaction] = [] # Transactions waiting to be added to blocks
+		self.genesisBlock : Block = None # First block in the chain
+		self.currBlock    : Block = None # Last block in the chain
+		self.difficulty   : int   = 3    # How computationally hard must hashes be? (36x exponential)
+		# For convienience, users and block references are packaged with the blockchain class
+		self.Users : list[user_wallete] = []
+		self.blockList : list[Block] = []
 
 	def AddUser(u:user_wallete):
-		Users.append(u)
+		self.Users.append(u)
 
 	def submitBlock(self, b):
 		if not (self.VerifyBlock(b)):
