@@ -6,6 +6,7 @@
 # The transactions on each block are validated
 
 from richiii.Block import * # Block class
+from richiii.Chain import * # MineBlock()
 from win.wincringe import * # Transaction class
 from maria_compute.RSA_new import * # Signing functions
 
@@ -22,13 +23,13 @@ print("T1: " + str(t1))
 print("T2: " + str(t2))
 
 block1 = Block(0, "", 999, [t1], 100, "A", "Original_Block")
-block1.currHash = SHA256(str(block1))
+MineBlock(block1, 4)
 
 block2 = Block(1, "", 999, [t2], 100, "A", block1.currHash)
-block2.currHash = SHA256(str(block2))
+MineBlock(block2, 2)
 
 print("Block 1: " + str(block1))
-print("Block 2: " + str(block2))
-
 verify_sig(aPublic, t1.signature, str(unsigned(t1)).encode('utf-8'))
+
+print("Block 2: " + str(block2))
 verify_sig(bPublic, t2.signature, str(unsigned(t2)).encode('utf-8'))
