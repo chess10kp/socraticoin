@@ -61,9 +61,9 @@ class BlockChain:
 		if( hashedBlock.currHash != b.currHash):
 			return "Block refused, hash: " + str(b.currHash[0:8]) + " does not match hash: " + str(hashedBlock.currHash[0:8]) + " (Nonce: " + str(b.nonce) + ")"
 		# Validate Block Transactions
-		# for loop t in transactionlist 
-			# if t sign cannot be verified by t.sender (which is the pubkey)
-				# return "Block refused, unverifiable transaction: " + str(t)
+		for t in b.transactions: 
+			if (False):
+				return "Block refused, unverifiable transaction: " + str(t)
 		# Verify Genesis Block
 		if(self.genesisBlock == None):
 			self.genesisBlock = b
