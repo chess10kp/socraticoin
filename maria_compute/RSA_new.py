@@ -11,23 +11,24 @@ def gneratebothkey():
         ec.SECP384R1()
     )
     public_key = private_key.public_key()
-    # serialization.Encoding.PEM
-    # BestAvailableEncryption
-    private_key_as_bytes = private_key.private_bytes(serialization.Encoding.PEM, serialization.PrivateFormat.TraditionalOpenSSL, serialization.BestAvailableEncryption(b"emacs"))
+    
+    return private_key,public_key
+
+def keys_as_strings(priv, pub):
+    private_key_as_bytes = priv.private_bytes(serialization.Encoding.PEM, serialization.PrivateFormat.TraditionalOpenSSL, serialization.BestAvailableEncryption(b"emacs"))
     private_key_as_string = private_key_as_bytes.decode("utf-8")
 
-    public_key_as_bytes = public_key.public_bytes(serialization.Encoding.OpenSSH, serialization.PublicFormat.OpenSSH)
+    public_key_as_bytes = pub.public_bytes(serialization.Encoding.OpenSSH, serialization.PublicFormat.OpenSSH)
     public_key_as_string = public_key_as_bytes.decode("utf-8")
 
     privString = private_key_as_string[-40:-36]
     pubString = public_key_as_string[-40:-36]
 
-    # print(privString)
-    # print(pubString)
+    return privString, pubString
 
-    return private_key_as_bytes,public_key_as_bytes
+
 def RSA_sig(pk,dat):
-    
+
     signature = pk.sign(
 
         dat,
@@ -58,9 +59,11 @@ def SHA256(msg : str)->str:
 
 
 ##################### test caseas
-'''
+
 private_key,public_key = gneratebothkey()
+
+pustr,prvstr = keys_as_strings(private_key, public_key)
+print(pustr + " " + prvstr)
 data = b'here'
 sig = RSA_sig(private_key,data)
 verify_sig(public_key,sig,data)
-'''
