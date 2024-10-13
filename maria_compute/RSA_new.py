@@ -14,18 +14,17 @@ def gneratebothkey():
     
     return private_key,public_key
 
-def keys_as_strings(priv, pub):
-    private_key_as_bytes = priv.private_bytes(serialization.Encoding.PEM, serialization.PrivateFormat.TraditionalOpenSSL, serialization.BestAvailableEncryption(b"emacs"))
-    private_key_as_string = private_key_as_bytes.decode("utf-8")
-
+def pub_to_str(pub):
     public_key_as_bytes = pub.public_bytes(serialization.Encoding.OpenSSH, serialization.PublicFormat.OpenSSH)
     public_key_as_string = public_key_as_bytes.decode("utf-8")
-
-    privString = private_key_as_string[-40:-36]
     pubString = public_key_as_string[-40:-36]
+    return pubString
 
-    return privString, pubString
-
+def priv_to_str(priv):
+    private_key_as_bytes = priv.private_bytes(serialization.Encoding.PEM, serialization.PrivateFormat.TraditionalOpenSSL, serialization.BestAvailableEncryption(b"emacs"))
+    private_key_as_string = private_key_as_bytes.decode("utf-8")
+    privString = private_key_as_string[-40:-36]
+    return privString
 
 def RSA_sig(pk,dat):
 
@@ -62,8 +61,8 @@ def SHA256(msg : str)->str:
 
 private_key,public_key = gneratebothkey()
 
-pustr,prvstr = keys_as_strings(private_key, public_key)
-print(pustr + " " + prvstr)
+
+
 data = b'here'
 sig = RSA_sig(private_key,data)
 verify_sig(public_key,sig,data)
