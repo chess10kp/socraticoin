@@ -29,20 +29,19 @@ def RSA_sig(pk,dat):
     return signature
 
 
-def verify(signature,public_key):
-    chosen_hash = hashes.SHA256()
-    digest = hashes.Hash(chosen_hash)
-
+def verify(signature,public_key,hash):
+  
     public_key.verify(
 
         signature,
 
-        digest,
+        hash,
 
-        ec.ECDSA(utils.Prehashed(chosen_hash))
+        ec.ECDSA(utils.Prehashed(hash))
 
     )
 
 
 def SHA256(msg : str)->str:
     return hashlib.sha256(msg.encode()).hexdigest()
+
