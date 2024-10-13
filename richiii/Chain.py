@@ -42,6 +42,7 @@ class BlockChain:
 
 	def create_new_user(self):
 		a = user_wallete(0)
+		self.Users.append(a)
 		return a
 
 	def submitBlock(self, b):
