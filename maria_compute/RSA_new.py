@@ -17,13 +17,13 @@ def gneratebothkey():
 def pub_to_str(pub):
     public_key_as_bytes = pub.public_bytes(serialization.Encoding.OpenSSH, serialization.PublicFormat.OpenSSH)
     public_key_as_string = public_key_as_bytes.decode("utf-8")
-    pubString = public_key_as_string[-40:-36]
+    pubString = public_key_as_string
     return pubString
 
 def priv_to_str(priv):
     private_key_as_bytes = priv.private_bytes(serialization.Encoding.PEM, serialization.PrivateFormat.TraditionalOpenSSL, serialization.BestAvailableEncryption(b"emacs"))
     private_key_as_string = private_key_as_bytes.decode("utf-8")
-    privString = private_key_as_string[-40:-36]
+    privString = private_key_as_string
     return privString
 
 def RSA_sig(pk,dat):

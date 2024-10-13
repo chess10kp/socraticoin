@@ -4,7 +4,7 @@ from maria_compute.RSA_new import *
 class user_wallete:
     def __init__(self):
         self.private_key, self.public_key = gneratebothkey()
-        self.ammount_of_crypto = ammount_of_crypto
+        self.ammount_of_crypto = 0
 
     def get_public_key(self):
         return self.public_key
@@ -12,8 +12,13 @@ class user_wallete:
         return self.private_key
     
     def get_public_str(self):
-        return pub_to_str(self.public_key)
+        return pub_to_str(self.public_key)[-40:-36]
     def get_private_str(self):
+        return priv_to_str(self.private_key)[-40:-36]
+
+    def get_public_str_full(self):
+        return pub_to_str(self.public_key)
+    def get_private_str_full(self):
         return priv_to_str(self.private_key)
     
     def get_crypto(self):

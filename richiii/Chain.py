@@ -10,7 +10,7 @@ from maria_compute.wallet  import * # Wallets
 def HashBlock(block:Block):
 	"""Computes a hash for a block from it's data"""
 	block.currHash = SHA256(str(block.unHashed())) 
-	print("Nonce: " + str(block.nonce) + " Hash: " + currHash[0:8])
+	print("Hashing Block " + str(block.blockNumber) + ", Nonce: " + str(block.nonce) + " Hash: " + block.currHash[0:8])
 	return block
 
 def MineBlock(block:Block = None, difficulty = 0):
@@ -28,8 +28,6 @@ def MineBlock(block:Block = None, difficulty = 0):
 		HashBlock(block)
 		block.nonce += 1
 
-	# Once a valid hash is found, apply the hash to the block
-	block.currHash = currHash 
 	return block
 
 class BlockChain:

@@ -35,6 +35,6 @@ class Block:
 
 		return s
 
-	def unHashed(): # Strips the hash and returns the block
+	def unHashed(self): # Strips the hash and returns the block
 		self.currHash = ""
 		return self
