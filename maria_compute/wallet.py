@@ -17,9 +17,9 @@ class user_wallete:
         return priv_to_str(self.private_key)[-40:-36]
 
     def get_public_str_full(self):
-        return pub_to_str(self.public_key)[-20:-36]
+        return pub_to_str(self.public_key)[-36:-20]
     def get_private_str_full(self):
-        return priv_to_str(self.private_key)[-20:-36]
+        return priv_to_str(self.private_key)[-36:-20]
     
     def get_crypto(self):
         temp= int(self.ammount_of_crypto)
