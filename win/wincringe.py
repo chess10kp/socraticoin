@@ -8,9 +8,9 @@ class Transaction:
     def __str__(self):
         return str(str(self.sender) + " -> " + 
                    str(self.reciever) + " Amt: " + 
-                   str(self.amount) + " Sig: " + 
-                   str(self.signature) + " Sig: " + 
-                   str(self.gasFee))
+                   str(self.amount) + " Fee: " + 
+                   str(self.gasFee) +  " Sig: " +
+                   str(self.signature))
 A = []
 def createtrans(Transaction):
     p1 = Transaction("Ali", "Bob", 100, 12, 0)
