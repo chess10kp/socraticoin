@@ -42,8 +42,3 @@ def verify(signature,public_key):
         ec.ECDSA(utils.Prehashed(chosen_hash))
 
     )
-private_key,public_key = gneratebothkey()
-data = b"this is some data I'd like to sign"
-signature = RSA_sig(private_key,data)
-if (verify(signature,public_key) == True):
-    print("True==================")
