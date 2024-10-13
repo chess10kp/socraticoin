@@ -12,10 +12,10 @@ aPrivate, aPublic = gneratebothkey()
 bPrivate, bPublic = gneratebothkey()
 
 t1 = Transaction("A", "B", 100, "", 10)
-t1.signed = RSA_sig(aPrivate, str(t1).encode('utf-8') )
+t1.signature = RSA_sig(aPrivate, str(t1).encode('utf-8') )
 
-t2 = Transaction("B", "C", 50,  0, 5)
-t2.signed = RSA_sig(bPrivate, str(t2).encode('utf-8') )
+t2 = Transaction("B", "C", 50, "", 5)
+t2.signature = RSA_sig(bPrivate, str(t2).encode('utf-8') )
 
 print("T1: " + str(t1))
 print("T2: " + str(t2))

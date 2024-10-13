@@ -25,10 +25,14 @@ class Block:
 	prevHash:      str               # Hash of the previous block (by number)
 
 	def __str__(self):
-		return ( str(self.blockNumber)  + " "
-			   +     self.currHash[0:4] + " "
-			   + str(self.blockReward)  + " "
-			   +     self.rewardAddress + " "
-			   +     self.prevHash[0:4] + " "
-			   + str(self.nonce)        + "\n"
-			   + str(self.data)         + "\n" )
+		s = ( str(self.blockNumber)  + " "
+			+     self.currHash[0:4] + " "
+			+ str(self.blockReward)  + " "
+			+     self.rewardAddress + " "
+			+     self.prevHash[0:4] + " "
+			+ str(self.nonce)        + "\n" )
+		
+		for t in self.data:
+			s += ("  " + str(t))
+
+		return s

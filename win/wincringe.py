@@ -8,7 +8,7 @@ class Transaction:
     def __str__(self):
         return str(str(self.sender) + " -> " + 
                    str(self.reciever) + " Amt: " + 
-                   str(self.amount) + " Fee: " + 
+                   str(self.amount) + " Sig: " + 
                    str(self.signature) + " Sig: " + 
                    str(self.gasFee))
 A = []
