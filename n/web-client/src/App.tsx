@@ -10,16 +10,18 @@ const InputForm = ({
 }) => {
   return (
     <div className="mb-5 flex">
-      <label
-        htmlFor="email"
-        className="text-blue-500 block mb-2 text-sm font-medium"
-      >
-        {label}
-      </label>
+      <div className="flex  items-center">
+        <label
+          htmlFor="email"
+          className="text-blue-500 block mr-1  text-sm font-medium"
+        >
+          {label}
+        </label>
+      </div>
       <input
         type="email"
         id="email"
-        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         placeholder={placeholder}
         required
       />
@@ -27,12 +29,18 @@ const InputForm = ({
   );
 };
 
+const Heading = ({ title }: { title: string }) => {
+  return (
+    <div className="align-center bg-red-100 text-center text-webDarkRed font-bold  text-3xl ">
+      <h1 className="text-black-500">{title}</h1>
+    </div>
+  );
+};
+
 const HomePage = () => {
   return (
     <div>
-      <div className="align-center bg-red-100 text-center ">
-        <h1 className="text-black-100">User</h1>
-      </div>
+      <Heading title="User" />
       <div className="bg-white">
         <form>
           <div className=" bg-red-100 flex flex-col h-full justify-between">
@@ -75,9 +83,7 @@ const TransactionTableRow = ({ sender, receiver, amount, gas, key }) => {
 const TransactionTable = () => {
   return (
     <div>
-      <div className="align-center bg-red-100 text-center ">
-        <h1 className="text-black-100">Transations</h1>
-      </div>
+      <Heading title="Transactions" />
       <table className="table-auto bg-blue-100 border-separate border-spacing-2 border border-slate-500">
         <thead>
           <tr>
@@ -128,6 +134,7 @@ const MinerTable = () => {
 const MinerPage = () => {
   return (
     <div className="">
+      <Heading title="Miner" />
       <div className=" bg-red-100 flex flex-col h-full justify-between">
         <InputForm label="Hash" placeholder="address"></InputForm>
         <InputForm label="Nonce" placeholder="$10"></InputForm>
@@ -145,9 +152,17 @@ function App() {
     <>
       <main className="bg-red-100 flex flex-col">
         <div className="flex">
-          <HomePage />
-          <TransactionTable />
-          <MinerPage />
+          <div className="flex-1">
+            <HomePage />
+          </div>
+
+          <div className="flex-1">
+            <TransactionTable />
+          </div>
+
+          <div className="flex-1">
+            <MinerPage />
+          </div>
         </div>
         <div className="">
           <Addresses label="Addr A" userAddress="TODO:" hasNew={true} />
@@ -188,16 +203,18 @@ const Addresses = (props: AddressProps) => {
   };
   return (
     <div className="flex px-2">
-      <label
-        htmlFor="email"
-        className="text-blue-500 block mb-2 text-sm font-medium"
-      >
-        {props.label}
-      </label>
+      <div className="flex items-center">
+        <label
+          htmlFor="email"
+          className="text-blue-500 block mr-1  text-sm font-medium"
+        >
+          {props.label}
+        </label>
+      </div>
       <input
         type="email"
         id="email"
-        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         placeholder="addr"
         required
       />
