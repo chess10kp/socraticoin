@@ -77,4 +77,4 @@ class BlockChain:
 		elif(b.prevHash != self.currBlock.currHash):
 			return "Block refused, prevHash: " + b.prevHash[0:8] + " does not match currHash: " + self.currBlock.currHash[0:8]
 		
-		return 1 # Block is valid
+		return True # Block is valid

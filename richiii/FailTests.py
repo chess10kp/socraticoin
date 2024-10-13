@@ -34,7 +34,7 @@ print(blockChain.submitBlock(Block(0, "0000000hardHash", 0, [], 100, UserA.get_p
 # Invalid block 3: Valid block with invalid transaction
 # Transaction validation is not yet implemented
 
-# Invalid block 4: Invalid Genesis Block
+# Invalid block 4: Invalid Genesis Block Number
 print(blockChain.submitBlock(MineBlock(Block(999, "", 0, [], 100, UserA.get_public_str(), "Genesis_Block"), blockChain.difficulty)))
 
 # Invalid block 5: Invalid Block Order
