@@ -11,10 +11,10 @@ from maria_compute.RSA_new import * # Signing functions
 aPrivate, aPublic = gneratebothkey()
 bPrivate, bPublic = gneratebothkey()
 
-t1 = Transaction("A", "B", 100, "", 10)
+t1 = Transaction("A", "B", 100, b"", 10)
 t1.signature = RSA_sig(aPrivate, str(t1).encode('utf-8') )
 
-t2 = Transaction("B", "C", 50, "", 5)
+t2 = Transaction("B", "C", 50, b"", 5)
 t2.signature = RSA_sig(bPrivate, str(t2).encode('utf-8') )
 
 print("T1: " + str(t1))
