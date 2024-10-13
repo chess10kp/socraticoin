@@ -7,8 +7,9 @@ class Transaction:
      self.signature = signature
      self.gasFee = gasFee
     def __str__(self):
-        return str(str(self.sender) + " -> " + 
-                   str(self.reciever) + " Amt: " + 
+        # print(type(self.sender))
+        return str(str(self.sender)[-6:-2] + " -> " + 
+                   str(self.reciever)[-6:-2] + " Amt: " + 
                    str(self.amount) + " Fee: " + 
                    str(self.gasFee) +  " Sig: " +
                    str(self.signature.hex())[-4:])
