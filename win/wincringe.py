@@ -7,11 +7,12 @@ class Transaction:
      self.signature = signature
      self.gasFee = gasFee
     def __str__(self):
+        self.signature = self.signature.decode('utf-8')
         return str(str(self.sender) + " -> " + 
                    str(self.reciever) + " Amt: " + 
                    str(self.amount) + " Fee: " + 
                    str(self.gasFee) +  " Sig: " +
-                   str(self.signature[0:4]).decode('utf-8'))
+                   str(self.signature[0:4]))
 A = []
 def createtrans(Transaction):
     p1 = Transaction("Ali", "Bob", 100, 12, 0)
