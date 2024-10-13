@@ -25,11 +25,9 @@ def gneratebothkey():
     # print(privString)
     # print(pubString)
 
-    return privString, pubString
-gneratebothkey()
-
+    return private_key_as_bytes,public_key_as_bytes
 def RSA_sig(pk,dat):
-
+    
     signature = pk.sign(
 
         dat,
