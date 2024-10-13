@@ -1,6 +1,10 @@
 import { useState } from "react";
 import "./App.css";
 
+const inputClasses =
+  "border bg-primary border-webBlue text-secondary text-sm focus:ring-blue-500 block w-full p-2.5   dark:placeholder-gray-400  dark:focus:ring-blue-500";
+const buttonClasses = "bg-webBlue px-3 text-white";
+
 const InputForm = ({
   label,
   placeholder,
@@ -13,7 +17,7 @@ const InputForm = ({
       <div className="flex  items-center">
         <label
           htmlFor="email"
-          className="text-blue-500 block mr-1  text-sm font-medium"
+          className="text-blue-500 bg-secondary h-full block pr-1  text-sm font-medium "
         >
           {label}
         </label>
@@ -21,7 +25,7 @@ const InputForm = ({
       <input
         type="email"
         id="email"
-        className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        className={inputClasses}
         placeholder={placeholder}
         required
       />
@@ -52,11 +56,8 @@ const HomePage = () => {
             <InputForm label="Amount" placeholder="$10"></InputForm>
             <InputForm label="Sign" placeholder="private key"></InputForm>
           </div>
-          <div className="flex justify-center align-center">
-            <button
-              type="submit"
-              className="bg-black text-white p-2 rounded-lg"
-            >
+          <div className="flex justify-center align-center bg-primary">
+            <button type="submit" className={buttonClasses}>
               Send
             </button>
           </div>
@@ -70,11 +71,11 @@ const TransactionTableRow = ({ sender, receiver, amount, gas, key }) => {
   return (
     <tbody>
       <tr>
-        <td className="border border-slate-600">{sender}</td>
-        <td className="border border-slate-600">{receiver}</td>
-        <td className="border border-slate-600">{amount}</td>
-        <td className="border border-slate-600">{gas}</td>
-        <td className="border border-slate-600">{key}</td>
+        <td className="border border-secondary">{sender}</td>
+        <td className="border border-secondary">{receiver}</td>
+        <td className="border border-secondary">{amount}</td>
+        <td className="border border-secondary">{gas}</td>
+        <td className="border border-secondary">{key}</td>
       </tr>
     </tbody>
   );
@@ -84,14 +85,14 @@ const TransactionTable = () => {
   return (
     <div>
       <Heading title="Transactions" />
-      <table className="table-auto bg-blue-100 border-separate border-spacing-2 border border-slate-500">
+      <table className="table-auto bg-secondary border-separate border-spacing-2 border border-secondary">
         <thead>
           <tr>
-            <th className="border border-slate-600">Sender</th>
-            <th className="border border-slate-600">Receiver</th>
-            <th className="border border-slate-600">Amount</th>
-            <th className="border border-slate-600">Gas</th>
-            <th className="border border-slate-600">Key</th>
+            <th className="border border-secondary">Sender</th>
+            <th className="border border-secondary">Receiver</th>
+            <th className="border border-secondary">Amount</th>
+            <th className="border border-secondary">Gas</th>
+            <th className="border border-secondary">Key</th>
           </tr>
         </thead>
         <TransactionTableRow
@@ -108,7 +109,7 @@ const TransactionTable = () => {
 
 const MinerTable = () => {
   return (
-    <table className="table-auto bg-blue-100 border-separate border-spacing-2 border border-slate-500">
+    <table className="table-auto bg-secondary border-separate border-spacing-2 border border-secondary">
       <thead>
         <tr>
           <th className="border border-slate-600">Sender</th>
@@ -152,15 +153,15 @@ function App() {
     <>
       <main className="bg-red-100 flex flex-col">
         <div className="flex">
-          <div className="flex-1">
+          <div className="flex-1 p-2 ">
             <HomePage />
           </div>
 
-          <div className="flex-1">
+          <div className="flex-1 p-2">
             <TransactionTable />
           </div>
 
-          <div className="flex-1">
+          <div className="flex-1 p-2">
             <MinerPage />
           </div>
         </div>
@@ -206,7 +207,7 @@ const Addresses = (props: AddressProps) => {
       <div className="flex items-center">
         <label
           htmlFor="email"
-          className="text-blue-500 block mr-1  text-sm font-medium"
+          className="bg-blue-500 block pr-1  text-sm font-medium"
         >
           {props.label}
         </label>
@@ -214,18 +215,15 @@ const Addresses = (props: AddressProps) => {
       <input
         type="email"
         id="email"
-        className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        className={inputClasses}
         placeholder="addr"
         required
       />
-      <button
-        className="bg-black text-white"
-        onClick={() => handleCopy("emacs")}
-      >
+      <button className={buttonClasses} onClick={() => handleCopy("emacs")}>
         Copy
       </button>
       {props.hasNew && (
-        <button onClick={makeNewHash} className="bg-black text-white">
+        <button onClick={makeNewHash} className={buttonClasses}>
           New
         </button>
       )}
