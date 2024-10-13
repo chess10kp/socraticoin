@@ -59,7 +59,7 @@ class BlockChain:
 		if(b.currHash[0:self.difficulty] != '0'*self.difficulty):
 			return f"Block refused, hash: " + str(b.currHash[0:8]) + " does not meet difficulty: " + str(self.difficulty)
 		# Verify Hash value 
-		hashedBlock = HashBlock(Block(b.blockNumber, b"", b.nonce, b.transactions, b.blockReward, b.rewardAddress, b.prevHash)) 
+		hashedBlock = HashBlock(b.unHashed()) 
 		if( hashedBlock.currHash != b.currHash):
 			return f"Block refused, hash: " + str(b.currHash[0:8]) + " does not match hash: " + str(hashedBlock.currHash[0:8]) + " (Nonce: " + str(b.nonce) + ")"
 		# Validate Block Transactions
@@ -81,7 +81,7 @@ class BlockChain:
 		
 		return "" # Block is valid
 
-	def ClearChain(): # clears the blockchain
+	def ClearChain(self): # clears the blockchain
 		self.blockList = []
 		self.transactionQueue = []
 		self.currBlock = None

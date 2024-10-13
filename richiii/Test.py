@@ -11,9 +11,9 @@ from maria_compute.RSA_new import * # Signing functions
 
 # Create a blockchain and 3 users
 blockChain = BlockChain()
-UserA = user_wallete()
-UserB = user_wallete()
-UserC = user_wallete()
+UserA = blockChain.create_new_user()
+UserB = blockChain.create_new_user()
+UserC = blockChain.create_new_user()
 
 # Create example transactions
 t1 = (Transaction(UserA.get_public_str(), UserB.get_public_str(), 100, 10)).Sign(UserA.get_private_key())
@@ -41,3 +41,5 @@ t2.Verify(UserB.get_public_key())
 t3.Verify(UserC.get_public_key())
 t4.Verify(UserB.get_public_key())
 t5.Verify(UserA.get_public_key())
+for u in blockChain.Users:
+	print("User: " + u.get_public_str())
