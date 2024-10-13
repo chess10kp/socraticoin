@@ -2,6 +2,7 @@
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import rsa, padding, ec
 from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric.ec import EllipticCurveSignatureAlgorithm
 from cryptography.hazmat.primitives.asymmetric import utils
 import hashlib
 
@@ -10,13 +11,22 @@ def gneratebothkey():
         ec.SECP384R1()
     )
     public_key = private_key.public_key()
+    # serialization.Encoding.PEM
+    # BestAvailableEncryption
+    private_key_as_bytes = private_key.private_bytes(serialization.Encoding.PEM, serialization.PrivateFormat.TraditionalOpenSSL, serialization.BestAvailableEncryption(b"emacs"))
+    private_key_as_string = private_key_as_bytes.decode("utf-8")
 
-    privKeyBytes = private_key.private_bytes()
-    pubKeyBytes = public_key.public_bytes()
+    public_key_as_bytes = public_key.public_bytes(serialization.Encoding.OpenSSH, serialization.PublicFormat.OpenSSH)
+    public_key_as_string = public_key_as_bytes.decode("utf-8")
 
-    privKeyStr = str(privKeyBytes)
-    pubKeyStr = str(pubKeyBytes)
-    return privKeyStr, pubKeyStr
+    privString = private_key_as_string[-40:-36]
+    pubString = public_key_as_string[-40:-36]
+
+    # print(privString)
+    # print(pubString)
+
+    return privString, pubString
+gneratebothkey()
 
 def RSA_sig(pk,dat):
 
