@@ -30,4 +30,5 @@ block2.currHash = SHA256(str(block2))
 print("Block 1: " + str(block1))
 print("Block 2: " + str(block2))
 
-verify_sig(aPublic, t1.signature, unsigned(t1))
+verify_sig(aPublic, t1.signature, str(unsigned(t1)).encode('utf-8'))
+verify_sig(bPublic, t2.signature, str(unsigned(t2)).encode('utf-8'))
