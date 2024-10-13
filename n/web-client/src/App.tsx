@@ -2,59 +2,108 @@ import { useState } from "react";
 import "./App.css";
 
 const inputClasses =
-  "border bg-primary border-webBlue text-secondary text-sm focus:ring-blue-500 block w-full p-2.5   dark:placeholder-gray-400  dark:focus:ring-blue-500";
-const buttonClasses = "bg-webBlue px-3 text-white";
+  "border cream text-secondary rounded-lg text-sm focus:ring-blue-500 block w-full p-2.5   dark:placeholder-gray-400  dark:focus:ring-blue-500";
+const buttonClasses = "bg-primary px-3 text-secondary";
+const tableRowClasses = "border bg-primary rounded-lg border-slate-600";
+const addressClasses =
+  "border-2 border-primary rounded-none cream text-secondary rounded-lg text-sm focus:ring-blue-500 block w-full p-2.5   dark:placeholder-gray-400  dark:focus:ring-blue-500";
 
 const InputForm = ({
   label,
   placeholder,
+  updateCallback,
+  value,
 }: {
   label: string;
   placeholder: string;
+  updateCallback: (e: any) => void;
+  value: string;
 }) => {
   return (
     <div className="mb-5 flex">
-      <div className="flex  items-center">
-        <label
-          htmlFor="email"
-          className="text-blue-500 bg-secondary h-full block pr-1  text-sm font-medium "
-        >
-          {label}
-        </label>
+      <div className="flex cream items-center">
+        <div className="h-full p-2 bg-secondary flex justify-center items-center">
+          <label
+            htmlFor="email"
+            className="text-primary cream p-2 block rounded-lg text-sm font-medium "
+          >
+            {label}
+          </label>
+        </div>
       </div>
-      <input
-        type="email"
-        id="email"
-        className={inputClasses}
-        placeholder={placeholder}
-        required
-      />
+      <div className="bg-primary p-4">
+        <input
+          id="email"
+          className={inputClasses}
+          placeholder={placeholder}
+          value={value}
+          onChange={(e) => updateCallback(e.target.value)}
+          required
+        />
+      </div>
     </div>
   );
 };
 
 const Heading = ({ title }: { title: string }) => {
   return (
-    <div className="align-center bg-red-100 text-center text-webDarkRed font-bold  text-3xl ">
+    <div className="heading align-center cream text-center text-webDarkRed font-bold  text-5xl ">
       <h1 className="text-black-500">{title}</h1>
     </div>
   );
 };
 
 const HomePage = () => {
+  const [address, setAddress] = useState("");
+  const [currentAmount, setCurrentAmount] = useState(0);
+  const [send, setSend] = useState("");
+  const [amount, setAmount] = useState(0);
+  const [sign, setSign] = useState("");
+
+  const handleAddress = (address: string) => setAddress(address);
+  const handleAmount = (amount: number) => setCurrentAmount(amount);
+  const handleSend = (send: string) => setSend(send);
+  const handleSendAmount = (amount: number) => setAmount(amount);
+  const handleSign = (sign: string) => setSign(sign);
+
   return (
     <div>
       <Heading title="User" />
       <div className="bg-white">
         <form>
           <div className=" bg-red-100 flex flex-col h-full justify-between">
-            <InputForm label="address" placeholder="address"></InputForm>
-            <InputForm label="Amount" placeholder="$10"></InputForm>
+            <InputForm
+              value={address}
+              updateCallback={handleAddress}
+              label="address"
+              placeholder="address"
+            ></InputForm>
+            <InputForm
+              value={currentAmount.toString()}
+              updateCallback={handleAmount}
+              label="Current Amount"
+              placeholder="$10"
+            ></InputForm>
           </div>
           <div className=" bg-red-100 flex flex-col h-full justify-between">
-            <InputForm label="Send" placeholder="send address"></InputForm>
-            <InputForm label="Amount" placeholder="$10"></InputForm>
-            <InputForm label="Sign" placeholder="private key"></InputForm>
+            <InputForm
+              value={send}
+              updateCallback={handleSend}
+              label="Send"
+              placeholder="send address"
+            ></InputForm>
+            <InputForm
+              value={amount.toString()}
+              updateCallback={handleSendAmount}
+              label="Amount"
+              placeholder="$10"
+            ></InputForm>
+            <InputForm
+              value={sign}
+              updateCallback={handleSign}
+              label="Sign"
+              placeholder="private key"
+            ></InputForm>
           </div>
           <div className="flex justify-center align-center bg-primary">
             <button type="submit" className={buttonClasses}>
@@ -67,15 +116,29 @@ const HomePage = () => {
   );
 };
 
-const TransactionTableRow = ({ sender, receiver, amount, gas, key }) => {
+type TransactionTableRowProps = {
+  sender: string;
+  receiver: string;
+  amount: string;
+  gas: string;
+  key: string;
+};
+
+const TransactionTableRow = ({
+  sender,
+  receiver,
+  amount,
+  gas,
+  key,
+}: TransactionTableRowProps) => {
   return (
     <tbody>
       <tr>
-        <td className="border border-secondary">{sender}</td>
-        <td className="border border-secondary">{receiver}</td>
-        <td className="border border-secondary">{amount}</td>
-        <td className="border border-secondary">{gas}</td>
-        <td className="border border-secondary">{key}</td>
+        <td className={tableRowClasses}>{sender}</td>
+        <td className={tableRowClasses}>{receiver}</td>
+        <td className={tableRowClasses}>{amount}</td>
+        <td className={tableRowClasses}>{gas}</td>
+        <td className={tableRowClasses}>{key}</td>
       </tr>
     </tbody>
   );
@@ -85,14 +148,24 @@ const TransactionTable = () => {
   return (
     <div>
       <Heading title="Transactions" />
-      <table className="table-auto bg-secondary border-separate border-spacing-2 border border-secondary">
+      <table className="table-auto mx-auto bg-secondary border-separate border-spacing-2 border border-secondary">
         <thead>
           <tr>
-            <th className="border border-secondary">Sender</th>
-            <th className="border border-secondary">Receiver</th>
-            <th className="border border-secondary">Amount</th>
-            <th className="border border-secondary">Gas</th>
-            <th className="border border-secondary">Key</th>
+            <th className="border table-header text-secondary cream border-secondary rounded-lg">
+              Sender
+            </th>
+            <th className="border table-header text-secondary cream border-secondary rounded-lg">
+              Receiver
+            </th>
+            <th className="border table-header text-secondary cream border-secondary rounded-lg">
+              Amount
+            </th>
+            <th className="border table-header text-secondary cream border-secondary rounded-lg">
+              Gas
+            </th>
+            <th className="border table-header text-secondary cream border-secondary rounded-lg">
+              Key
+            </th>
           </tr>
         </thead>
         <TransactionTableRow
@@ -112,20 +185,30 @@ const MinerTable = () => {
     <table className="table-auto bg-secondary border-separate border-spacing-2 border border-secondary">
       <thead>
         <tr>
-          <th className="border border-slate-600">Sender</th>
-          <th className="border border-slate-600">Receiver</th>
-          <th className="border border-slate-600">Amount</th>
-          <th className="border border-slate-600">Gas</th>
-          <th className="border border-slate-600">Key</th>
+          <th className="border rounded-lg cream text-secondary table-header border-slate-600">
+            Sender
+          </th>
+          <th className="border rounded-lg cream text-secondary table-header border-slate-600">
+            Receiver
+          </th>
+          <th className="border rounded-lg cream text-secondary table-header border-slate-600">
+            Amount
+          </th>
+          <th className="border rounded-lg cream text-secondary table-header border-slate-600">
+            Gas
+          </th>
+          <th className="border rounded-lg cream text-secondary table-header border-slate-600">
+            Key
+          </th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td className="border border-slate-600">Shining Star</td>
-          <td className="border border-slate-600">Earth, Wind, and Fire</td>
-          <td className="border border-slate-600">1975</td>
-          <td className="border border-slate-600">1975</td>
-          <td className="border border-slate-600">1975</td>
+          <td className={tableRowClasses}>Shining Star</td>
+          <td className={tableRowClasses}>Earth, Wind, and Fire</td>
+          <td className={tableRowClasses}>1975</td>
+          <td className={tableRowClasses}>1975</td>
+          <td className={tableRowClasses}>1975</td>
         </tr>
       </tbody>
     </table>
@@ -133,35 +216,81 @@ const MinerTable = () => {
 };
 
 const MinerPage = () => {
+  const [hash, setHash] = useState("");
+  const [nonce, setNonce] = useState("");
+  const [prev, setPrev] = useState("");
+
+  const handleHash = (hash: string) => setHash(hash);
+  const handleNonce = (nonce: string) => setNonce(nonce);
+  const handlePrev = (prev: string) => setPrev(prev);
+
   return (
     <div className="">
       <Heading title="Miner" />
       <div className=" bg-red-100 flex flex-col h-full justify-between">
-        <InputForm label="Hash" placeholder="address"></InputForm>
-        <InputForm label="Nonce" placeholder="$10"></InputForm>
-        <InputForm label="Prev" placeholder="$10"></InputForm>
+        <InputForm
+          value={hash}
+          updateCallback={handleHash}
+          label="Hash"
+          placeholder="address"
+        ></InputForm>
+        <InputForm
+          value={nonce}
+          updateCallback={handleNonce}
+          label="Nonce"
+          placeholder="$10"
+        ></InputForm>
+        <InputForm
+          value={prev}
+          updateCallback={handlePrev}
+          label="Prev"
+          placeholder="$10"
+        ></InputForm>
         <MinerTable />
       </div>
     </div>
   );
 };
 
-function App() {
-  const [count, setCount] = useState(0);
+const Block = () => {
+  return (
+    <div className="flex flex-col border-2 border-secondary  my-2">
+      <div className="bg-secondary m-0 px-4">
+        <p>Prev hash</p>
+      </div>
+      <div className="m-auto">
+        <p>Prev hash</p>
+      </div>
+      <div className="bg-secondary m-0 px-4">
+        <p>Prev hash</p>
+      </div>
+    </div>
+  );
+};
 
+const Blocks = () => {
+  return (
+    <div className="flex justify-evenly px-8 ">
+      <Block />
+      <Block />
+      <Block />
+    </div>
+  );
+};
+
+function App() {
   return (
     <>
+      <Blocks />
       <main className="bg-red-100 flex flex-col">
         <div className="flex">
-          <div className="flex-1 p-2 ">
+          <div className="flex-1 menu-shadow p-2 border-2 border-secondary">
             <HomePage />
           </div>
-
-          <div className="flex-1 p-2">
+          <div className="flex-1 menu-shadow p-2 border-2 border-secondary ">
             <TransactionTable />
           </div>
-
-          <div className="flex-1 p-2">
+          <div className="flex-1 menu-shadow p-2 border-2 border-secondary">
             <MinerPage />
           </div>
         </div>
@@ -184,11 +313,9 @@ type AddressProps = {
 const Addresses = (props: AddressProps) => {
   console.log(props);
   const [_, setCopy] = useState(false);
-
   const makeNewHash = () => {
     // TODO:
   };
-
   const handleCopy = (text: string) => {
     const textToCopy = text;
     // Copy the text to the clipboard
@@ -207,18 +334,12 @@ const Addresses = (props: AddressProps) => {
       <div className="flex items-center">
         <label
           htmlFor="email"
-          className="bg-blue-500 block pr-1  text-sm font-medium"
+          className="bg-primary block p-1 table-header text-secondary text-sm font-medium"
         >
           {props.label}
         </label>
       </div>
-      <input
-        type="email"
-        id="email"
-        className={inputClasses}
-        placeholder="addr"
-        required
-      />
+      <div className={addressClasses}>#woeijfowiej</div>
       <button className={buttonClasses} onClick={() => handleCopy("emacs")}>
         Copy
       </button>
