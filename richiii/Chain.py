@@ -40,11 +40,12 @@ class BlockChain:
 		self.Users : list[user_wallete] = []
 		self.blockList : list[Block] = []
 
-	def AddUser(self, u:user_wallete):
-		self.Users.append(u)
+	def create_new_user(self):
+		a = user_wallete(0)
+		return a
 
 	def submitBlock(self, b):
-		if (self.VerifyBlock(b) != ""):
+		if not (self.VerifyBlock(b)):
 			return self.VerifyBlock(b)
 
 		# If the above passed, the block is valid, add it to the chain
@@ -76,7 +77,7 @@ class BlockChain:
 		elif(b.prevHash != self.currBlock.currHash):
 			return "Block refused, prevHash: " + b.prevHash[0:8] + " does not match currHash: " + self.currBlock.currHash[0:8]
 		
-		return "" # Block is valid
+		return True # Block is valid
 
 	def ClearChain(): # clears the blockchain
 		self.blockList = []
