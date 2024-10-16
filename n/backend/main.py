@@ -113,7 +113,7 @@ def initialize_chain():
     return {"message": "Blockchain initialized"}
 
 
-@app.get("/get_blockchain")
+@app.get("/blockchain")
 def get_blockchain():
     if not blockChain:
         initialize_chain()
@@ -147,7 +147,6 @@ async def get_all_transactions():
     if not blockChain:
         initialize_chain()
     for transaction in blockChain.transactionQueue:
-        print(transaction)
         transactions.append(
             [
                 transaction.sender,

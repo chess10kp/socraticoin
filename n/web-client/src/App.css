@@ -21,6 +21,10 @@
   margin: 20px;
 }
 
+.block-shadow {
+  box-shadow: 10px 10px 0px #51abb0;
+}
+
 body,
 main,
 div {

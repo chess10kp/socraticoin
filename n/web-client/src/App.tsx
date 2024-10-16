@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 
 const inputClasses =
@@ -25,7 +25,7 @@ const InputForm = ({
         <div className="h-full p-2 bg-secondary flex justify-center items-center">
           <label
             htmlFor="email"
-            className="text-primary cream p-2 block rounded-lg text-sm font-medium "
+            className="text-primary table-header cream p-2 block rounded-lg text-sm font-medium "
           >
             {label}
           </label>
@@ -48,25 +48,45 @@ const InputForm = ({
 const Heading = ({ title }: { title: string }) => {
   return (
     <div className="heading align-center cream text-center text-webDarkRed font-bold  text-5xl ">
-      <h1 className="text-black-500">{title}</h1>
+      <h1 className="text-black-500 py-2">{title}</h1>
     </div>
   );
 };
 
-const HomePage = () => {
+const HomePage = ({ refresh }: { refresh: any }) => {
   const [address, setAddress] = useState("");
-  const [currentAmount, setCurrentAmount] = useState(0);
   const [send, setSend] = useState("");
   const [amount, setAmount] = useState(0);
   const [sign, setSign] = useState("");
   const [gas, setGas] = useState(0);
 
   const handleAddress = (address: string) => setAddress(address);
-  const handleAmount = (amount: number) => setCurrentAmount(amount);
   const handleSend = (send: string) => setSend(send);
   const handleSendAmount = (amount: number) => setAmount(amount);
   const handleSign = (sign: string) => setSign(sign);
   const handleGas = (gas: number) => setGas(gas);
+
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    fetch("http://127.0.0.1:8000/new_transaction", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        address: address,
+        send_address: send,
+        amount_to_send: amount.toString(),
+        sign: sign,
+        gas: gas.toString(),
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        refresh();
+      });
+  };
 
   return (
     <div>
@@ -80,18 +100,12 @@ const HomePage = () => {
               label="address"
               placeholder="address"
             ></InputForm>
-            <InputForm
-              value={currentAmount.toString()}
-              updateCallback={handleAmount}
-              label="Current Amount"
-              placeholder="$10"
-            ></InputForm>
           </div>
           <div className=" bg-red-100 flex flex-col h-full justify-between">
             <InputForm
               value={send}
               updateCallback={handleSend}
-              label="Send"
+              label="Send Address"
               placeholder="send address"
             ></InputForm>
             <InputForm
@@ -114,7 +128,11 @@ const HomePage = () => {
             />
           </div>
           <div className="flex justify-center align-center bg-primary">
-            <button type="submit" className={buttonClasses}>
+            <button
+              type="submit"
+              onClick={(e) => handleSubmit(e)}
+              className={buttonClasses}
+            >
               Send
             </button>
           </div>
@@ -129,7 +147,7 @@ type TransactionTableRowProps = {
   receiver: string;
   amount: string;
   gas: string;
-  key: string;
+  sign: string;
 };
 
 const TransactionTableRow = ({
@@ -137,7 +155,7 @@ const TransactionTableRow = ({
   receiver,
   amount,
   gas,
-  key,
+  sign,
 }: TransactionTableRowProps) => {
   return (
     <tbody>
@@ -146,13 +164,13 @@ const TransactionTableRow = ({
         <td className={tableRowClasses}>{receiver}</td>
         <td className={tableRowClasses}>{amount}</td>
         <td className={tableRowClasses}>{gas}</td>
-        <td className={tableRowClasses}>{key}</td>
+        <td className={tableRowClasses}>{sign}</td>
       </tr>
     </tbody>
   );
 };
 
-const TransactionTable = () => {
+const TransactionTable = ({ transactions }: { transactions: string[][] }) => {
   return (
     <div>
       <Heading title="Transactions" />
@@ -176,13 +194,16 @@ const TransactionTable = () => {
             </th>
           </tr>
         </thead>
-        <TransactionTableRow
-          sender="sender"
-          receiver="rec"
-          amount="10"
-          gas="1"
-          key="10"
-        />
+        {Object.entries(transactions).map(([i, transaction]) => (
+          <TransactionTableRow
+            key={i}
+            sender={transaction[0]}
+            receiver={transaction[1]}
+            amount={transaction[2]}
+            gas={transaction[3]}
+            sign={transaction[4]}
+          />
+        ))}
       </table>
     </div>
   );
@@ -279,6 +300,10 @@ const MinerPage = () => {
           label="Reward Address"
           placeholder="reward address"
         />
+        <div className="flex justify-evenly items-center my-2">
+          <button className={buttonClasses}>Hash</button>
+          <button className={buttonClasses}>Auto</button>
+        </div>
 
         <MinerTable />
       </div>
@@ -286,52 +311,182 @@ const MinerPage = () => {
   );
 };
 
-const Block = () => {
+type BlockProps = {
+  currentHashBlock: BlockInfo;
+};
+
+const Block = ({ currentHashBlock }: BlockProps) => {
+  console.log(currentHashBlock);
   return (
-    <div className="flex flex-col border-2 border-secondary  my-2">
-      <div className="bg-secondary m-0 px-4">
-        <p>Prev hash</p>
+    <div className="flex flex-col border-2 border-secondary  my-2 block-shadow ">
+      <div className="flex bg-secondary m-0 px-4 z-1 ">
+        <p>
+          {currentHashBlock.prevHash.length > 6
+            ? currentHashBlock.prevHash.slice(
+                currentHashBlock.prevHash.length - 6,
+                currentHashBlock.prevHash.length,
+              )
+            : currentHashBlock.prevHash}
+        </p>
       </div>
-      <div className="m-auto">
-        <p>Prev hash</p>
+      <div className="m-auto p-2">
+        <p>id {currentHashBlock.blockNumber}</p>
       </div>
       <div className="bg-secondary m-0 px-4">
-        <p>Prev hash</p>
+        <p>
+          {currentHashBlock.hash.length > 6
+            ? currentHashBlock.hash.slice(
+                currentHashBlock.hash.length - 6,
+                currentHashBlock.hash.length,
+              )
+            : currentHashBlock.hash}
+        </p>
       </div>
     </div>
   );
 };
 
-const Blocks = () => {
+const BlockArrow = () => {
   return (
-    <div className="flex justify-evenly px-8 ">
-      <Block />
-      <Block />
-      <Block />
+    <div className="m-0 flex items-center p-0 z-0">
+      <svg
+        width="50"
+        height="50"
+        xmlns="http://www.w3.org/2000/svg"
+        version="1.1"
+        viewBox="400 250 250 200"
+      >
+        <g
+          strokeWidth="10"
+          stroke="hsl(0, 0%, 0%)"
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          transform="rotate(288, 400, 400)"
+        >
+          <path
+            d="M250 250Q450 470 550 550 "
+            markerEnd="url(#SvgjsMarker1119)"
+          ></path>
+        </g>
+        <defs>
+          <marker
+            markerWidth="5"
+            markerHeight="5"
+            refX="2.5"
+            refY="2.5"
+            viewBox="0 0 5 5"
+            orient="auto"
+            id="SvgjsMarker1119"
+          >
+            <polygon
+              points="0,5 1.6666666666666667,2.5 0,0 5,2.5"
+              fill="hsl(0, 0%, 0%)"
+            ></polygon>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+  );
+};
+
+type BlockInfo = {
+  blockNumber: string;
+  hash: string;
+  nonce: string;
+  blockReward: string;
+  prevHash: string;
+  transaction: TransactionInfo[];
+};
+
+type TransactionInfo = {
+  sender: string;
+  reciever: string;
+  amount: string;
+  signature: string;
+  gasFee: string;
+};
+
+const Blocks = () => {
+  const [blocks, setBlocks] = useState<Array<BlockInfo>>([]);
+  const [currentHashBlock, setcurrentHashBlock] = useState<Array<BlockInfo>>(
+    [],
+  );
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/blockchain")
+      .then((response) => {
+        return response.json();
+      })
+      .then((data: { number: BlockInfo }) => {
+        const blocks = Array<BlockInfo>();
+        for (const [_, value] of Object.entries(data)) {
+          blocks.push(value);
+        }
+        setBlocks(blocks);
+      });
+  }, []);
+
+  const lastBlock: BlockInfo = {
+    blockNumber: "",
+    hash: "",
+    nonce: "",
+    blockReward: "",
+    prevHash: "",
+    transaction: [],
+  };
+
+  return (
+    <div className="flex items-center overflow-scroll justify-center px-8 ">
+      {blocks &&
+        blocks.map((block, index) => {
+          return (
+            <div key={index}>
+              <Block currentHashBlock={block} />
+              <BlockArrow />
+            </div>
+          );
+        })}
+      <Block currentHashBlock={lastBlock} />
     </div>
   );
 };
 
 function App() {
+  const [transactions, setTransactions] = useState([[""]]);
+
+  const refreshTransactions = () => {
+    fetch("http://127.0.0.1:8000/transactions")
+      .then((response) => response.json())
+      .then((data) => {
+        setTransactions(data.transactions);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  };
+
+  useEffect(() => {
+    refreshTransactions();
+  }, []);
+
   return (
     <>
       <Blocks />
       <main className="bg-red-100 flex flex-col">
         <div className="flex">
           <div className="flex-1 menu-shadow p-2 border-2 border-secondary">
-            <HomePage />
+            <HomePage refresh={refreshTransactions} />
           </div>
           <div className="flex-1 menu-shadow p-2 border-2 border-secondary ">
-            <TransactionTable />
+            <TransactionTable transactions={transactions} />
           </div>
           <div className="flex-1 menu-shadow p-2 border-2 border-secondary">
             <MinerPage />
           </div>
         </div>
         <div className="">
-          <Addresses label="Addr A" userAddress="TODO:" hasNew={true} />
-          <Addresses label="Private Key A" userAddress="TODO:" hasNew={false} />
-          <Addresses label="Addr B" userAddress="TODO:" hasNew={false} />
+          <Addresses />
         </div>
       </main>
     </>
@@ -344,8 +499,48 @@ type AddressProps = {
   label: string;
 };
 
-const Addresses = (props: AddressProps) => {
-  console.log(props);
+const Addresses = () => {
+  const [publicKey, setPublicKey] = useState("");
+  const [privateKey, setPrivateKey] = useState("");
+  const [addressB, setAddressB] = useState("");
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/private_key")
+      .then((response) => response.json())
+      .then((data) => {
+        setPrivateKey(data.private_key);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+    fetch("http://127.0.0.1:8000/public_key")
+      .then((response) => response.json())
+      .then((data) => {
+        setPublicKey(data.public_key);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+    fetch("http://127.0.0.1:8000/rand_user")
+      .then((response) => response.json())
+      .then((data) => {
+        setAddressB(data.random_user);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }, []);
+
+  return (
+    <div className="my-5">
+      <Address label="Addr A" userAddress={publicKey} hasNew={true} />
+      <Address label="Private Key A" userAddress={privateKey} hasNew={false} />
+      <Address label="Addr B" userAddress={addressB} hasNew={false} />
+    </div>
+  );
+};
+
+const Address = (props: AddressProps) => {
   const [_, setCopy] = useState(false);
   const makeNewHash = () => {
     // TODO:
@@ -373,8 +568,13 @@ const Addresses = (props: AddressProps) => {
           {props.label}
         </label>
       </div>
-      <div className={addressClasses}>#woeijfowiej</div>
-      <button className={buttonClasses} onClick={() => handleCopy("emacs")}>
+      <div className={addressClasses}>
+        {props.userAddress.slice(0, 80) + "..."}
+      </div>
+      <button
+        className={buttonClasses}
+        onClick={() => handleCopy(props.userAddress)}
+      >
         Copy
       </button>
       {props.hasNew && (
