@@ -157,11 +157,13 @@ const TransactionTableRow = ({
   gas,
   sign,
 }: TransactionTableRowProps) => {
+  console.log(receiver, sender);
   return (
     <tbody>
       <tr>
-        <td className={tableRowClasses}>{sender}</td>
-        <td className={tableRowClasses}>{receiver}</td>
+        <td className={tableRowClasses}>
+          {sender.slice(sender.length - 6, sender.length)}
+        </td>
         <td className={tableRowClasses}>{amount}</td>
         <td className={tableRowClasses}>{gas}</td>
         <td className={tableRowClasses}>{sign}</td>
@@ -171,40 +173,45 @@ const TransactionTableRow = ({
 };
 
 const TransactionTable = ({ transactions }: { transactions: string[][] }) => {
+  console.log(transactions);
   return (
     <div>
       <Heading title="Transactions" />
-      <table className="table-auto mx-auto bg-secondary border-separate border-spacing-2 border border-secondary">
-        <thead>
-          <tr>
-            <th className="border table-header text-secondary cream border-secondary rounded-lg">
-              Sender
-            </th>
-            <th className="border table-header text-secondary cream border-secondary rounded-lg">
-              Receiver
-            </th>
-            <th className="border table-header text-secondary cream border-secondary rounded-lg">
-              Amount
-            </th>
-            <th className="border table-header text-secondary cream border-secondary rounded-lg">
-              Gas
-            </th>
-            <th className="border table-header text-secondary cream border-secondary rounded-lg">
-              Key
-            </th>
-          </tr>
-        </thead>
-        {Object.entries(transactions).map(([i, transaction]) => (
-          <TransactionTableRow
-            key={i}
-            sender={transaction[0]}
-            receiver={transaction[1]}
-            amount={transaction[2]}
-            gas={transaction[3]}
-            sign={transaction[4]}
-          />
-        ))}
-      </table>
+      {transactions.entries.length > 0 ? (
+        <table className="table-auto mx-auto bg-secondary border-separate border-spacing-2 border border-secondary">
+          <thead>
+            <tr>
+              <th className="border table-header text-secondary cream border-secondary rounded-lg">
+                Sender
+              </th>
+              <th className="border table-header text-secondary cream border-secondary rounded-lg">
+                Receiver
+              </th>
+              <th className="border table-header text-secondary cream border-secondary rounded-lg">
+                Amount
+              </th>
+              <th className="border table-header text-secondary cream border-secondary rounded-lg">
+                Gas
+              </th>
+              <th className="border table-header text-secondary cream border-secondary rounded-lg">
+                Key
+              </th>
+            </tr>
+          </thead>
+          {Object.entries(transactions).map(([i, transaction]) => (
+            <TransactionTableRow
+              key={i}
+              sender={transaction[0]}
+              receiver={transaction[1]}
+              amount={transaction[2]}
+              gas={transaction[3]}
+              sign={transaction[4]}
+            />
+          ))}
+        </table>
+      ) : (
+        <p> No transactions made yet </p>
+      )}
     </div>
   );
 };
@@ -316,7 +323,6 @@ type BlockProps = {
 };
 
 const Block = ({ currentHashBlock }: BlockProps) => {
-  console.log(currentHashBlock);
   return (
     <div className="flex flex-col border-2 border-secondary  my-2 block-shadow ">
       <div className="flex bg-secondary m-0 px-4 z-1 ">
@@ -428,11 +434,11 @@ const Blocks = () => {
   }, []);
 
   const lastBlock: BlockInfo = {
-    blockNumber: "",
-    hash: "",
-    nonce: "",
-    blockReward: "",
-    prevHash: "",
+    blockNumber: "???",
+    hash: "???",
+    nonce: "???",
+    blockReward: "???",
+    prevHash: "???",
     transaction: [],
   };
 
@@ -441,7 +447,7 @@ const Blocks = () => {
       {blocks &&
         blocks.map((block, index) => {
           return (
-            <div key={index}>
+            <div className="flex" key={index}>
               <Block currentHashBlock={block} />
               <BlockArrow />
             </div>
