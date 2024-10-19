@@ -5,6 +5,11 @@ const inputClasses =
   "border cream text-secondary rounded-lg text-sm focus:ring-blue-500 block w-full p-2.5   dark:placeholder-gray-400  dark:focus:ring-blue-500";
 const buttonClasses = "bg-primary px-3 text-secondary";
 const tableRowClasses = "border bg-primary rounded-lg border-slate-600";
+const transactionTableHeaderClasses =
+  "border table-header text-secondary cream border-secondary rounded-lg";
+const minerTableHeaderClasses =
+  "border rounded-lg cream text-secondary table-header border-slate-600";
+
 const addressClasses =
   "border-2 border-primary rounded-none cream text-secondary rounded-lg text-sm focus:ring-blue-500 block w-full p-2.5   dark:placeholder-gray-400  dark:focus:ring-blue-500";
 
@@ -164,6 +169,9 @@ const TransactionTableRow = ({
         <td className={tableRowClasses}>
           {sender.slice(sender.length - 6, sender.length)}
         </td>
+        <td className={tableRowClasses}>
+          {receiver.slice(receiver.length - 6, receiver.length)}
+        </td>
         <td className={tableRowClasses}>{amount}</td>
         <td className={tableRowClasses}>{gas}</td>
         <td className={tableRowClasses}>{sign}</td>
@@ -173,41 +181,32 @@ const TransactionTableRow = ({
 };
 
 const TransactionTable = ({ transactions }: { transactions: string[][] }) => {
+  console.log("transactiontable: ")
   console.log(transactions);
   return (
     <div>
       <Heading title="Transactions" />
-      {transactions.entries.length > 0 ? (
+      {transactions.length > 0 ? (
         <table className="table-auto mx-auto bg-secondary border-separate border-spacing-2 border border-secondary">
           <thead>
             <tr>
-              <th className="border table-header text-secondary cream border-secondary rounded-lg">
-                Sender
-              </th>
-              <th className="border table-header text-secondary cream border-secondary rounded-lg">
-                Receiver
-              </th>
-              <th className="border table-header text-secondary cream border-secondary rounded-lg">
-                Amount
-              </th>
-              <th className="border table-header text-secondary cream border-secondary rounded-lg">
-                Gas
-              </th>
-              <th className="border table-header text-secondary cream border-secondary rounded-lg">
-                Key
-              </th>
+              <th className={transactionTableHeaderClasses}>Sender</th>
+              <th className={transactionTableHeaderClasses}>Receiver</th>
+              <th className={transactionTableHeaderClasses}>Amount</th>
+              <th className={transactionTableHeaderClasses}>Gas</th>
+              <th className={transactionTableHeaderClasses}>Key</th>
             </tr>
           </thead>
-          {Object.entries(transactions).map(([i, transaction]) => (
-            <TransactionTableRow
+          {transactions.map((transaction, i) => {
+            return <TransactionTableRow
               key={i}
               sender={transaction[0]}
               receiver={transaction[1]}
               amount={transaction[2]}
-              gas={transaction[3]}
-              sign={transaction[4]}
+              gas={transaction[4]}
+              sign={transaction[3]}
             />
-          ))}
+          })}
         </table>
       ) : (
         <p> No transactions made yet </p>
@@ -216,42 +215,42 @@ const TransactionTable = ({ transactions }: { transactions: string[][] }) => {
   );
 };
 
-const MinerTable = () => {
+type MinerTableProps = {
+  minerTransactions: TransactionInfo[];
+}
+
+const MinerTable = ({minerTransactions} : MinerTableProps) => {
   return (
-    <table className="table-auto bg-secondary border-separate border-spacing-2 border border-secondary">
-      <thead>
-        <tr>
-          <th className="border rounded-lg cream text-secondary table-header border-slate-600">
-            Sender
-          </th>
-          <th className="border rounded-lg cream text-secondary table-header border-slate-600">
-            Receiver
-          </th>
-          <th className="border rounded-lg cream text-secondary table-header border-slate-600">
-            Amount
-          </th>
-          <th className="border rounded-lg cream text-secondary table-header border-slate-600">
-            Gas
-          </th>
-          <th className="border rounded-lg cream text-secondary table-header border-slate-600">
-            Key
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td className={tableRowClasses}>Shining Star</td>
-          <td className={tableRowClasses}>Earth, Wind, and Fire</td>
-          <td className={tableRowClasses}>1975</td>
-          <td className={tableRowClasses}>1975</td>
-          <td className={tableRowClasses}>1975</td>
-        </tr>
-      </tbody>
-    </table>
+    (minerTransactions.length > 0) ? (
+      <table className="table-auto bg-secondary border-separate border-spacing-2 border border-secondary">
+        <thead>
+          <tr>
+            {["Sender", "Receiver", "Amount", "Gas", "Key"].map((header, i) => (
+              <th key={i} className={minerTableHeaderClasses}>{header}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td className={tableRowClasses}>Shining Star</td>
+            <td className={tableRowClasses}>Earth, Wind, and Fire</td>
+            <td className={tableRowClasses}>1975</td>
+            <td className={tableRowClasses}>1975</td>
+            <td className={tableRowClasses}>1975</td>
+          </tr>
+        </tbody>
+      </table>
+    ) : ( <h1 className="bold"></h1> )
+
   );
 };
 
-const MinerPage = () => {
+type MinerPageProps = {
+  minedTransactions: TransactionInfo[];
+  mineTransactionCallback: (transaction: TransactionInfo) => void;
+} 
+
+const MinerPage = ({minedTransactions, mineTransactionCallback}: MinerPageProps) => {
   const [hash, setHash] = useState("");
   const [nonce, setNonce] = useState("");
   const [prev, setPrev] = useState("");
@@ -312,7 +311,7 @@ const MinerPage = () => {
           <button className={buttonClasses}>Auto</button>
         </div>
 
-        <MinerTable />
+        <MinerTable minerTransactions={minedTransactions} />
       </div>
     </div>
   );
@@ -415,9 +414,6 @@ type TransactionInfo = {
 
 const Blocks = () => {
   const [blocks, setBlocks] = useState<Array<BlockInfo>>([]);
-  const [currentHashBlock, setcurrentHashBlock] = useState<Array<BlockInfo>>(
-    [],
-  );
 
   useEffect(() => {
     fetch("http://127.0.0.1:8000/blockchain")
@@ -458,8 +454,21 @@ const Blocks = () => {
   );
 };
 
-function App() {
+const App = () => {
   const [transactions, setTransactions] = useState([[""]]);
+  const [minerTransactions, setMinedTransactions] = useState<Array<TransactionInfo>>([])
+
+  const moveToMinerTransaction = (transaction: TransactionInfo) => {
+    // TODO:
+    setMinedTransactions([...minerTransactions, transaction])
+  }
+
+  /*
+   * Add a tranasction to the blockchain
+   */
+  const mineTransaction = (transaction: TransactionInfo) => {
+    // TODO: 
+  }
 
   const refreshTransactions = () => {
     fetch("http://127.0.0.1:8000/transactions")
@@ -488,7 +497,7 @@ function App() {
             <TransactionTable transactions={transactions} />
           </div>
           <div className="flex-1 menu-shadow p-2 border-2 border-secondary">
-            <MinerPage />
+            <MinerPage minedTransactions={minerTransactions} mineTransactionCallback={mineTransaction} />
           </div>
         </div>
         <div className="">
