@@ -10,8 +10,8 @@ from win.wincringe import Transaction
 blockChain = None
 
 app = FastAPI(
-    title="GitGraft",
-    description="Expense Tracker with Git integration",
+    title="Socraticoin",
+    description="An Educational Cryptocurrency",
     version="0.0.1",
 )
 
@@ -137,7 +137,6 @@ def get_blockchain():
             for transaction in parsed["transactions"]
         ]
         nodes[i] = parsed
-    print(nodes)
     return nodes
 
 
@@ -150,7 +149,7 @@ async def get_all_transactions():
         transactions.append(
             [
                 transaction.sender,
-                transaction.reciever,
+                transaction.reciever if transaction.reciever is not None else "",
                 transaction.amount,
                 str(transaction.signature.hex())[-4:],
                 transaction.gasFee,
