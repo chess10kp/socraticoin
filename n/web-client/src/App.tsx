@@ -96,7 +96,7 @@ const HomePage = ({ refresh }: { refresh: any }) => {
   return (
     <div>
       <Heading title="User" />
-      <div className="bg-white">
+      <div className="">
         <form>
           <div className=" bg-red-100 flex flex-col h-full justify-between">
             <InputForm
@@ -153,6 +153,7 @@ type TransactionTableRowProps = {
   amount: string;
   gas: string;
   sign: string;
+  moveToMinerTransaction: (transaction: Transaction) => void;
 };
 
 const TransactionTableRow = ({
@@ -161,28 +162,48 @@ const TransactionTableRow = ({
   amount,
   gas,
   sign,
+  moveToMinerTransaction,
 }: TransactionTableRowProps) => {
-  console.log(receiver, sender);
+  const rowData = [
+    sender ? sender.slice(sender.length - 6, sender.length) : "",
+    receiver ? receiver.slice(receiver.length - 6, receiver.length) : "",
+    amount,
+    gas,
+    sign,
+  ];
   return (
     <tbody>
-      <tr>
-        <td className={tableRowClasses}>
-          {sender.slice(sender.length - 6, sender.length)}
-        </td>
-        <td className={tableRowClasses}>
-          {receiver.slice(receiver.length - 6, receiver.length)}
-        </td>
-        <td className={tableRowClasses}>{amount}</td>
-        <td className={tableRowClasses}>{gas}</td>
-        <td className={tableRowClasses}>{sign}</td>
+      <tr
+        onClick={() =>
+          moveToMinerTransaction({
+            sender: sender,
+            receiver: receiver,
+            amount: amount,
+            gasFee: gas,
+            signature: sign,
+          })
+        }
+      >
+        {rowData.map((data, i) => (
+          <td key={i} className={tableRowClasses}>
+            {data}
+          </td>
+        ))}
       </tr>
     </tbody>
   );
 };
 
-const TransactionTable = ({ transactions }: { transactions: string[][] }) => {
-  console.log("transactiontable: ")
-  console.log(transactions);
+type TransactionTableProps = {
+  transactions: string[][];
+  moveToMinerTransactionCallback: (transaction: Transaction) => void;
+};
+
+const TransactionTable = ({
+  transactions,
+  moveToMinerTransactionCallback,
+}: TransactionTableProps) => {
+  const headings = ["Sender", "Receiver", "Amount", "Gas", "Key"];
   return (
     <div>
       <Heading title="Transactions" />
@@ -190,22 +211,25 @@ const TransactionTable = ({ transactions }: { transactions: string[][] }) => {
         <table className="table-auto mx-auto bg-secondary border-separate border-spacing-2 border border-secondary">
           <thead>
             <tr>
-              <th className={transactionTableHeaderClasses}>Sender</th>
-              <th className={transactionTableHeaderClasses}>Receiver</th>
-              <th className={transactionTableHeaderClasses}>Amount</th>
-              <th className={transactionTableHeaderClasses}>Gas</th>
-              <th className={transactionTableHeaderClasses}>Key</th>
+              {headings.map((header, i) => (
+                <th key={i} className={transactionTableHeaderClasses}>
+                  {header}
+                </th>
+              ))}
             </tr>
           </thead>
           {transactions.map((transaction, i) => {
-            return <TransactionTableRow
-              key={i}
-              sender={transaction[0]}
-              receiver={transaction[1]}
-              amount={transaction[2]}
-              gas={transaction[4]}
-              sign={transaction[3]}
-            />
+            return (
+              <TransactionTableRow
+                key={i}
+                sender={transaction[0]}
+                receiver={transaction[1]}
+                amount={transaction[2]}
+                gas={transaction[4]}
+                sign={transaction[3]}
+                moveToMinerTransaction={moveToMinerTransactionCallback}
+              />
+            );
           })}
         </table>
       ) : (
@@ -216,55 +240,102 @@ const TransactionTable = ({ transactions }: { transactions: string[][] }) => {
 };
 
 type MinerTableProps = {
-  minerTransactions: TransactionInfo[];
-}
+  minerTransactions: Transaction[];
+  moveToBlockChainCallback: (t: Transaction) => void;
+};
 
-const MinerTable = ({minerTransactions} : MinerTableProps) => {
-  return (
-    (minerTransactions.length > 0) ? (
-      <table className="table-auto bg-secondary border-separate border-spacing-2 border border-secondary">
-        <thead>
-          <tr>
-            {["Sender", "Receiver", "Amount", "Gas", "Key"].map((header, i) => (
-              <th key={i} className={minerTableHeaderClasses}>{header}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td className={tableRowClasses}>Shining Star</td>
-            <td className={tableRowClasses}>Earth, Wind, and Fire</td>
-            <td className={tableRowClasses}>1975</td>
-            <td className={tableRowClasses}>1975</td>
-            <td className={tableRowClasses}>1975</td>
-          </tr>
-        </tbody>
-      </table>
-    ) : ( <h1 className="bold"></h1> )
-
+const MinerTable = ({
+  minerTransactions,
+  moveToBlockChainCallback: moveToBlockchainCallback,
+}: MinerTableProps) => {
+  return minerTransactions.length > 0 ? (
+    <table className="table-auto bg-secondary border-separate border-spacing-2 border border-secondary">
+      <thead>
+        <tr>
+          {["Sender", "Receiver", "Amount", "Gas", "Key"].map((header, i) => (
+            <th key={i} className={minerTableHeaderClasses}>
+              {header}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {minerTransactions.map((transaction, i) => {
+          const rowData = [
+            transaction.sender
+              ? transaction.sender.slice(
+                  transaction.sender.length - 6,
+                  transaction.sender.length,
+                )
+              : "",
+            transaction.receiver
+              ? transaction.receiver.slice(
+                  transaction.receiver.length - 6,
+                  transaction.receiver.length,
+                )
+              : "",
+            transaction.amount,
+            transaction.gasFee,
+            transaction.signature,
+          ];
+          return (
+            <tr key={i} onClick={() => moveToBlockchainCallback(transaction)}>
+              <td className={tableRowClasses}>{rowData[0]}</td>
+              <td className={tableRowClasses}>{rowData[1]}</td>
+              <td className={tableRowClasses}>{rowData[2]}</td>
+              <td className={tableRowClasses}>{rowData[3]}</td>
+              <td className={tableRowClasses}>{rowData[4]}</td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  ) : (
+    <h1 className="bold"></h1>
   );
 };
 
 type MinerPageProps = {
-  minedTransactions: TransactionInfo[];
-  mineTransactionCallback: (transaction: TransactionInfo) => void;
-} 
+  minedTransactions: Transaction[];
+  mineTransactionCallback: (transaction: TransactionToMine) => void;
+  getBlockNumberCallback: () => string;
+};
 
-const MinerPage = ({minedTransactions, mineTransactionCallback}: MinerPageProps) => {
+const MinerPage = ({
+  minedTransactions,
+  mineTransactionCallback,
+  getBlockNumberCallback,
+}: MinerPageProps) => {
   const [hash, setHash] = useState("");
   const [nonce, setNonce] = useState("");
   const [prev, setPrev] = useState("");
-  const [number, setNumber] = useState(0);
-  const [reward, setReward] = useState(0);
+  const [reward, setReward] = useState(100);
   const [rewardAddress, setRewardAddress] = useState("");
 
   const handleHash = (hash: string) => setHash(hash);
   const handleNonce = (nonce: string) => setNonce(nonce);
   const handlePrev = (prev: string) => setPrev(prev);
-  const handleNumber = (number: number) => setNumber(number);
   const handleReward = (reward: number) => setReward(reward);
   const handleRewardAddress = (rewardAddress: string) =>
     setRewardAddress(rewardAddress);
+
+  const autoFillMinerForm = (b: Transaction) => {
+    setHash(b.sender);
+  };
+
+  const mineTransaction = (t: Transaction) => {
+    const transactionToMine: TransactionToMine = {
+      sender: t.sender,
+      amount: t.amount,
+      reward: reward.toString(),
+      gasFee: t.gasFee,
+      nonce: nonce,
+      signature: t.signature,
+      reward_address: rewardAddress,
+      blockNumber: getBlockNumberCallback(),
+    };
+    mineTransactionCallback(transactionToMine);
+  };
 
   return (
     <div className="">
@@ -274,44 +345,41 @@ const MinerPage = ({minedTransactions, mineTransactionCallback}: MinerPageProps)
           value={hash}
           updateCallback={handleHash}
           label="Hash"
-          placeholder="address"
-        ></InputForm>
+          placeholder="transaction signature"
+        />
         <InputForm
           value={nonce}
           updateCallback={handleNonce}
           label="Nonce"
-          placeholder="$10"
-        ></InputForm>
+          placeholder="random string"
+        />
         <InputForm
           value={prev}
           updateCallback={handlePrev}
           label="Prev"
-          placeholder="$10"
-        ></InputForm>
-        <InputForm
-          value={number.toString()}
-          updateCallback={handleNumber}
-          label="Number"
-          placeholder="number"
+          placeholder="previous block hash"
         />
         <InputForm
           value={reward.toString()}
           updateCallback={handleReward}
           label="Reward"
-          placeholder="reward"
+          placeholder="reward (ex $10)"
         />
         <InputForm
           value={rewardAddress}
           updateCallback={handleRewardAddress}
           label="Reward Address"
-          placeholder="reward address"
+          placeholder="address to send reward to"
         />
         <div className="flex justify-evenly items-center my-2">
           <button className={buttonClasses}>Hash</button>
           <button className={buttonClasses}>Auto</button>
         </div>
 
-        <MinerTable minerTransactions={minedTransactions} />
+        <MinerTable
+          moveToBlockChainCallback={mineTransaction}
+          minerTransactions={minedTransactions}
+        />
       </div>
     </div>
   );
@@ -335,7 +403,8 @@ const Block = ({ currentHashBlock }: BlockProps) => {
         </p>
       </div>
       <div className="m-auto p-2">
-        <p>id {currentHashBlock.blockNumber}</p>
+        <p>id {currentHashBlock.id}</p>
+        <p>nonce {currentHashBlock.nonce}</p>
       </div>
       <div className="bg-secondary m-0 px-4">
         <p>
@@ -396,40 +465,41 @@ const BlockArrow = () => {
 };
 
 type BlockInfo = {
+  id: string;
   blockNumber: string;
   hash: string;
   nonce: string;
   blockReward: string;
   prevHash: string;
-  transaction: TransactionInfo[];
+  transaction: Transaction[];
 };
 
-type TransactionInfo = {
+type Transaction = {
   sender: string;
-  reciever: string;
+  receiver: string;
   amount: string;
   signature: string;
   gasFee: string;
 };
 
-const Blocks = () => {
-  const [blocks, setBlocks] = useState<Array<BlockInfo>>([]);
+type TransactionToMine = {
+  sender: string;
+  reward_address: string;
+  amount: string;
+  signature: string;
+  gasFee: string;
+  nonce: string;
+  blockNumber: string;
+  reward: string;
+};
 
-  useEffect(() => {
-    fetch("http://127.0.0.1:8000/blockchain")
-      .then((response) => {
-        return response.json();
-      })
-      .then((data: { number: BlockInfo }) => {
-        const blocks = Array<BlockInfo>();
-        for (const [_, value] of Object.entries(data)) {
-          blocks.push(value);
-        }
-        setBlocks(blocks);
-      });
-  }, []);
+type BlocksProps = {
+  blocks: BlockInfo[];
+};
 
+const Blocks = ({ blocks }: BlocksProps) => {
   const lastBlock: BlockInfo = {
+    id: "???",
     blockNumber: "???",
     hash: "???",
     nonce: "???",
@@ -439,7 +509,7 @@ const Blocks = () => {
   };
 
   return (
-    <div className="flex items-center overflow-scroll justify-center px-8 ">
+    <div className="flex items-center overflow-x-scroll justify-center px-8 ">
       {blocks &&
         blocks.map((block, index) => {
           return (
@@ -456,19 +526,56 @@ const Blocks = () => {
 
 const App = () => {
   const [transactions, setTransactions] = useState([[""]]);
-  const [minerTransactions, setMinedTransactions] = useState<Array<TransactionInfo>>([])
+  const [blocks, setBlocks] = useState<Array<BlockInfo>>([]);
+  const [minerTransactions, setMinedTransactions] = useState<
+    Array<Transaction>
+  >([]);
 
-  const moveToMinerTransaction = (transaction: TransactionInfo) => {
+  const moveToMinerTransaction = (transaction: Transaction) => {
     // TODO:
-    setMinedTransactions([...minerTransactions, transaction])
-  }
+    // TODO: also remove the transaction from the transaction table
+    setMinedTransactions([...minerTransactions, transaction]);
+  };
 
   /*
    * Add a tranasction to the blockchain
    */
-  const mineTransaction = (transaction: TransactionInfo) => {
-    // TODO: 
-  }
+  const mineTransaction = (t: TransactionToMine) => {
+    // TODO: remove t from the minertable, then call "/mine_block"
+    const minerTs = minerTransactions.filter(
+      (minerTransaction) => t.signature != minerTransaction.signature,
+    );
+    setMinedTransactions(minerTs);
+    console.log({
+      transaction_hash: t.signature,
+      nonce: t.nonce,
+      blockNumber: transactions.length.toString(),
+      reward: t.reward,
+      reward_address: t.reward_address,
+    });
+    fetch("http://127.0.0.1:8000/mine_block", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        transaction_hash: t.signature,
+        nonce: t.nonce,
+        blockNumber: transactions.length.toString(),
+        reward: t.reward,
+        reward_address: t.reward_address,
+        prevHash: getPrevHash(),
+      }),
+    });
+    refreshTransactions();
+  };
+
+  const getPrevHash = () => {
+    return blocks[blocks.length - 1].hash;
+  };
+  const getBlockNumber = () => {
+    return blocks.length.toString();
+  };
 
   const refreshTransactions = () => {
     fetch("http://127.0.0.1:8000/transactions")
@@ -485,19 +592,40 @@ const App = () => {
     refreshTransactions();
   }, []);
 
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/blockchain")
+      .then((response) => {
+        return response.json();
+      })
+      .then((data: { number: BlockInfo }) => {
+        const blocks = Array<BlockInfo>();
+        for (const [_, value] of Object.entries(data)) {
+          blocks.push(value);
+        }
+        setBlocks(blocks);
+      });
+  }, []);
+
   return (
     <>
-      <Blocks />
+      <Blocks blocks={blocks} />
       <main className="bg-red-100 flex flex-col">
         <div className="flex">
           <div className="flex-1 menu-shadow p-2 border-2 border-secondary">
             <HomePage refresh={refreshTransactions} />
           </div>
           <div className="flex-1 menu-shadow p-2 border-2 border-secondary ">
-            <TransactionTable transactions={transactions} />
+            <TransactionTable
+              moveToMinerTransactionCallback={moveToMinerTransaction}
+              transactions={transactions}
+            />
           </div>
           <div className="flex-1 menu-shadow p-2 border-2 border-secondary">
-            <MinerPage minedTransactions={minerTransactions} mineTransactionCallback={mineTransaction} />
+            <MinerPage
+              getBlockNumberCallback={getBlockNumber}
+              minedTransactions={minerTransactions}
+              mineTransactionCallback={mineTransaction}
+            />
           </div>
         </div>
         <div className="">
@@ -506,7 +634,7 @@ const App = () => {
       </main>
     </>
   );
-}
+};
 
 type AddressProps = {
   userAddress: string;
