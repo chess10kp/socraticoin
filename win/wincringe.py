@@ -45,10 +45,3 @@ class Transaction:
 
 def unsigned(t):
     return Transaction(t.sender, t.reciever, t.amount, t.gasFee)
-
-
-# A = []
-# def createtrans(Transaction):
-#     p1 = Transaction("Ali", "Bob", 100, 12)
-#     print(p1)
-# x = Transaction("Ali", "Bob", 100, 12)
