@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
 from richiii.Block import Block
-from richiii.Chain import BlockChain, MineBlock
+from richiii.Chain import BlockChain, MineBlock, mine_block_with_feedback
 from win.wincringe import Transaction
 
 
@@ -120,6 +120,7 @@ def get_blockchain():
     nodes: dict[list]
     nodes = {}
     for i, node in enumerate(blockChain.blockList):
+        print(node)
         parsed = parse_block_info(node)
         # self.sender = sender
         # self.reciever = reciever
@@ -196,6 +197,14 @@ class TransactionParams(BaseModel):
     gas: str
 
 
+class TransactionToMineParams(BaseModel):
+    blockNumber: int
+    transaction_hash: str
+    nonce: str
+    reward: str
+    reward_address: str
+
+
 @app.get("/public_key")
 def get_public_key():
     if not blockChain:
@@ -229,6 +238,42 @@ def create_new_transaction(data: TransactionParams):
         )
     ).Sign(user.get_private_key())
     blockChain.transactionQueue.append(t)
+    # TODO: add checks to make sure that the transaction is actually valid + validate the fields (maybe in the frontend?)
+
+
+@app.post("/mine_block")
+def mine_block(data: None | TransactionToMineParams = None):
+    print(data)
+    if not data:
+        return
+    if not blockChain:
+        initialize_chain()
+
+    data = data.dict()
+
+    transactions = filter(
+        lambda t: t.hash == data["transaction_hash"], blockChain.blockList
+    )
+    # TODO: fix blockNumber
+    print(data)
+    block = Block(
+        data["blockNumber"],
+        "",
+        0,
+        [transactions],
+        data["reward"],
+        data["reward_address"],
+        blockChain.currBlock.currHash,
+    )
+
+    new_block = mine_block_with_feedback(
+        block, nonce=data["nonce"], difficulty=blockChain.difficulty
+    )
+    print(new_block.currHash)
+    print(new_block.currHash[: blockChain.difficulty], "0" * blockChain.difficulty)
+    print(new_block.currHash[: blockChain.difficulty] == "0" * blockChain.difficulty)
+
+    print(blockChain.submitBlock(new_block))
 
 
 if __name__ == "__main__":

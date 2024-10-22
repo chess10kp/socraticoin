@@ -30,6 +30,26 @@ def MineBlock(block:Block = None, difficulty = 0):
 
 	return block
 
+def mine_block_with_feedback(block:Block = None, difficulty = 0, nonce: str| None = None , feedback: bool = False):
+    "Computes a correct hash for a block, according to the provided difficulty, returns feedback for each nonce on success or fail"
+    if (block == None): # If no block provided, return
+        return None
+
+    # difficulty = num of 0's the hash should start with
+    difficultyString = '0'*difficulty 
+
+    block.nonce = int(nonce) if nonce else 0
+
+	# Compute hashes until one meets the difficulty requirement
+    while(block.currHash[0:difficulty] != difficultyString): 
+        HashBlock(block)
+        if feedback and block.currHash[0:difficulty] != difficultyString:
+             raise Exception(f"{block.currHash[0:8]} does not meet difficulty: {difficulty}")
+        block.nonce += 1
+
+    print(block.currHash)
+    return block
+
 class BlockChain:
 	def __init__(self):
 		self.transactionQueue : list[Transaction] = [] # Transactions waiting to be added to blocks
@@ -46,8 +66,13 @@ class BlockChain:
 		return a
 
 	def submitBlock(self, b):
-		if (self.VerifyBlock(b)!=""):
-			return self.VerifyBlock(b)
+		print("submitblock call")
+		print(b.currHash)
+		verified : str = self.VerifyBlock(b)
+		if (verified !=""):
+			print("hi")
+			print(b.currHash)
+			return verified
 
 		# If the above passed, the block is valid, add it to the chain
 		self.blockList.append(b)
@@ -55,11 +80,12 @@ class BlockChain:
 		return "Block added to chain! Hash: " + b.currHash[0:8]
 
 	def VerifyBlock(self, b):
+		print(b.currHash)
 		# Verify Block difficulty
 		if(b.currHash[0:self.difficulty] != '0'*self.difficulty):
 			return f"Block refused, hash: " + str(b.currHash[0:8]) + " does not meet difficulty: " + str(self.difficulty)
 		# Verify Hash value 
-		hashedBlock = HashBlock(b.unHashed()) 
+		hashedBlock = HashBlock(b) 
 		if( hashedBlock.currHash != b.currHash):
 			return f"Block refused, hash: " + str(b.currHash[0:8]) + " does not match hash: " + str(hashedBlock.currHash[0:8]) + " (Nonce: " + str(b.nonce) + ")"
 		# Validate Block Transactions
