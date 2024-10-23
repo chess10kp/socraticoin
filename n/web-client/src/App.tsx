@@ -3,7 +3,8 @@ import "./App.css";
 
 const inputClasses =
   "border cream text-secondary rounded-lg text-sm focus:ring-blue-500 block w-full p-2.5   dark:placeholder-gray-400  dark:focus:ring-blue-500";
-const buttonClasses = "bg-primary px-3 text-secondary";
+const buttonClasses = "bg-primary px-3 text-secondary ";
+const tableClasses = "table-auto mx-auto bg-secondary border-separate border-spacing-2 border border-secondary"
 const tableRowClasses = "border bg-primary rounded-lg border-slate-600";
 const transactionTableHeaderClasses =
   "border table-header text-secondary cream border-secondary rounded-lg";
@@ -61,9 +62,9 @@ const Heading = ({ title }: { title: string }) => {
 const HomePage = ({ refresh }: { refresh: any }) => {
   const [address, setAddress] = useState("");
   const [send, setSend] = useState("");
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState(100);
   const [sign, setSign] = useState("");
-  const [gas, setGas] = useState(0);
+  const [gas, setGas] = useState(10);
 
   const handleAddress = (address: string) => setAddress(address);
   const handleSend = (send: string) => setSend(send);
@@ -71,7 +72,42 @@ const HomePage = ({ refresh }: { refresh: any }) => {
   const handleSign = (sign: string) => setSign(sign);
   const handleGas = (gas: number) => setGas(gas);
 
+  // TODO: remove after DEBUG
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/private_key")
+      .then((response) => response.json())
+      .then((data) => {
+        setSign(data.private_key);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+    fetch("http://127.0.0.1:8000/public_key")
+      .then((response) => response.json())
+      .then((data) => {
+        setAddress(data.public_key);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+    fetch("http://127.0.0.1:8000/rand_user")
+      .then((response) => response.json())
+      .then((data) => {
+        setSend(data.random_user);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }, []);
+
   const handleSubmit = (e: any) => {
+    console.log({
+      address: address,
+      send_address: send,
+      amount_to_send: amount.toString(),
+      sign: sign,
+      gas: gas.toString(),
+    });
     e.preventDefault();
     fetch("http://127.0.0.1:8000/new_transaction", {
       method: "POST",
@@ -98,7 +134,7 @@ const HomePage = ({ refresh }: { refresh: any }) => {
       <Heading title="User" />
       <div className="">
         <form>
-          <div className=" bg-red-100 flex flex-col h-full justify-between">
+          <div className=" flex flex-col h-full justify-between">
             <InputForm
               value={address}
               updateCallback={handleAddress}
@@ -106,7 +142,7 @@ const HomePage = ({ refresh }: { refresh: any }) => {
               placeholder="address"
             ></InputForm>
           </div>
-          <div className=" bg-red-100 flex flex-col h-full justify-between">
+          <div className="  flex flex-col h-full justify-between">
             <InputForm
               value={send}
               updateCallback={handleSend}
@@ -132,7 +168,7 @@ const HomePage = ({ refresh }: { refresh: any }) => {
               placeholder="Gas"
             />
           </div>
-          <div className="flex justify-center align-center bg-primary">
+          <div className="flex justify-left align-center">
             <button
               type="submit"
               onClick={(e) => handleSubmit(e)}
@@ -169,7 +205,7 @@ const TransactionTableRow = ({
     receiver ? receiver.slice(receiver.length - 6, receiver.length) : "",
     amount,
     gas,
-    sign,
+    sign ? sign.slice(sign.length - 4, sign.length) : "",
   ];
   return (
     <tbody>
@@ -208,7 +244,7 @@ const TransactionTable = ({
     <div>
       <Heading title="Transactions" />
       {transactions.length > 0 ? (
-        <table className="table-auto mx-auto bg-secondary border-separate border-spacing-2 border border-secondary">
+        <table className={tableClasses}>
           <thead>
             <tr>
               {headings.map((header, i) => (
@@ -249,7 +285,7 @@ const MinerTable = ({
   moveToBlockChainCallback: moveToBlockchainCallback,
 }: MinerTableProps) => {
   return minerTransactions.length > 0 ? (
-    <table className="table-auto bg-secondary border-separate border-spacing-2 border border-secondary">
+    <table className={tableClasses}>
       <thead>
         <tr>
           {["Sender", "Receiver", "Amount", "Gas", "Key"].map((header, i) => (
@@ -276,7 +312,7 @@ const MinerTable = ({
               : "",
             transaction.amount,
             transaction.gasFee,
-            transaction.signature,
+            transaction.signature ? transaction.signature.slice(transaction.signature.length - 4, transaction.signature.length) : ""
           ];
           return (
             <tr key={i} onClick={() => moveToBlockchainCallback(transaction)}>
@@ -340,7 +376,7 @@ const MinerPage = ({
   return (
     <div className="">
       <Heading title="Miner" />
-      <div className=" bg-red-100 flex flex-col h-full justify-between">
+      <div className=" flex flex-col h-full justify-between">
         <InputForm
           value={hash}
           updateCallback={handleHash}
@@ -532,7 +568,6 @@ const App = () => {
   >([]);
 
   const moveToMinerTransaction = (transaction: Transaction) => {
-    // TODO:
     // TODO: also remove the transaction from the transaction table
     setMinedTransactions([...minerTransactions, transaction]);
   };
@@ -542,16 +577,25 @@ const App = () => {
    */
   const mineTransaction = (t: TransactionToMine) => {
     // TODO: remove t from the minertable, then call "/mine_block"
+    // TODO: refresh the blockChain so that it displays newblockchain
+    // TODO: also fix bug with the transactions list not being sent into the external api
+
     const minerTs = minerTransactions.filter(
       (minerTransaction) => t.signature != minerTransaction.signature,
     );
     setMinedTransactions(minerTs);
     console.log({
-      transaction_hash: t.signature,
-      nonce: t.nonce,
-      blockNumber: transactions.length.toString(),
-      reward: t.reward,
-      reward_address: t.reward_address,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        transaction_hash: t.signature,
+        nonce: t.nonce,
+        blockNumber: (blocks.length + 1).toString(),
+        reward: t.reward,
+        reward_address: t.reward_address,
+      }),
     });
     fetch("http://127.0.0.1:8000/mine_block", {
       method: "POST",
@@ -561,18 +605,29 @@ const App = () => {
       body: JSON.stringify({
         transaction_hash: t.signature,
         nonce: t.nonce,
-        blockNumber: transactions.length.toString(),
+        blockNumber: blocks.length.toString(),
         reward: t.reward,
         reward_address: t.reward_address,
-        prevHash: getPrevHash(),
       }),
     });
     refreshTransactions();
+    refreshBlockChain();
   };
 
-  const getPrevHash = () => {
-    return blocks[blocks.length - 1].hash;
+  const refreshBlockChain = () => {
+    fetch("http://127.0.0.1:8000/blockchain")
+      .then((response) => {
+        return response.json();
+      })
+      .then((data: { number: BlockInfo }) => {
+        const blocks = Array<BlockInfo>();
+        for (const [_, value] of Object.entries(data)) {
+          blocks.push(value);
+        }
+        setBlocks(blocks);
+      });
   };
+
   const getBlockNumber = () => {
     return blocks.length.toString();
   };
@@ -609,7 +664,7 @@ const App = () => {
   return (
     <>
       <Blocks blocks={blocks} />
-      <main className="bg-red-100 flex flex-col">
+      <main className="flex flex-col">
         <div className="flex">
           <div className="flex-1 menu-shadow p-2 border-2 border-secondary">
             <HomePage refresh={refreshTransactions} />

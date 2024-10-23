@@ -7,7 +7,7 @@ from richiii.Chain import BlockChain, MineBlock, mine_block_with_feedback
 from win.wincringe import Transaction
 
 
-blockChain = None
+blockChain: None | BlockChain = None
 
 app = FastAPI(
     title="Socraticoin",
@@ -39,7 +39,6 @@ async def new_hash():
 def initialize_chain():
     global blockChain
     # Create a blockchain and 3 users
-    blockChain = BlockChain()
     blockChain = BlockChain()
     UserA = blockChain.create_new_user()
     UserB = blockChain.create_new_user()
@@ -152,7 +151,7 @@ async def get_all_transactions():
                 transaction.sender,
                 transaction.reciever if transaction.reciever is not None else "",
                 transaction.amount,
-                str(transaction.signature.hex())[-4:],
+                str(transaction.signature.hex()),
                 transaction.gasFee,
             ]
         )
@@ -160,8 +159,8 @@ async def get_all_transactions():
     return {"transactions": transactions}
 
 
-def parse_block_info(block: Block):
-    info = {}
+def parse_block_info(block: Block) -> dict[str, str | int | list[Transaction]]:
+    info: dict[str, str | int | list[Transaction]] = {}
     info["id"] = block.blockNumber
     info["hash"] = block.currHash
     info["nonce"] = block.nonce
@@ -169,14 +168,6 @@ def parse_block_info(block: Block):
     info["prevHash"] = block.prevHash
     info["transactions"] = [transaction for transaction in block.transactions]
     return info
-
-
-@app.get("/get_last_two_blocks")
-def get_two_blockchain_nodes():
-    if not blockChain:
-        initialize_chain()
-        # TODO:
-    return {"prevBlock": {}, "currBlock": {}}
 
 
 @app.get("/rand_user")
@@ -237,6 +228,7 @@ def create_new_transaction(data: TransactionParams):
             (data["gas"]),
         )
     ).Sign(user.get_private_key())
+    print(t.sender, t.reciever, t.amount, t.signature.hex(), t.gasFee)
     blockChain.transactionQueue.append(t)
     # TODO: add checks to make sure that the transaction is actually valid + validate the fields (maybe in the frontend?)
 
@@ -251,16 +243,24 @@ def mine_block(data: None | TransactionToMineParams = None):
 
     data = data.dict()
 
-    transactions = filter(
-        lambda t: t.hash == data["transaction_hash"], blockChain.blockList
-    )
-    # TODO: fix blockNumber
+    transactions = [
+        transaction
+        for transaction in blockChain.transactionQueue
+        if transaction.signature.hex() == data["transaction_hash"]
+    ]
+    for t in blockChain.transactionQueue:
+        print(t.signature.hex())
+        print(t.sender)
+        print(t.signature)
+        print(t.reciever)
+        print(t.amount)
+
     print(data)
     block = Block(
         data["blockNumber"],
         "",
         0,
-        [transactions],
+        transactions,
         data["reward"],
         data["reward_address"],
         blockChain.currBlock.currHash,
@@ -269,11 +269,9 @@ def mine_block(data: None | TransactionToMineParams = None):
     new_block = mine_block_with_feedback(
         block, nonce=data["nonce"], difficulty=blockChain.difficulty
     )
-    print(new_block.currHash)
-    print(new_block.currHash[: blockChain.difficulty], "0" * blockChain.difficulty)
-    print(new_block.currHash[: blockChain.difficulty] == "0" * blockChain.difficulty)
 
-    print(blockChain.submitBlock(new_block))
+    print(t.Verify(t.sender))
+    blockChain.submitBlock(new_block)
 
 
 if __name__ == "__main__":
