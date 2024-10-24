@@ -1,14 +1,16 @@
+from typing import override
 from maria_compute.RSA_new import RSA_sig, verify_sig
 
 
 class Transaction:
-    def __init__(self, sender, reciever, amount, gasFee):
+    def __init__(self, sender: str, reciever: str, amount: str, gasFee: str):
         self.sender = sender
         self.reciever = reciever
         self.amount = amount
-        self.signature = b""
+        self.signature: bytes = b""
         self.gasFee = gasFee
 
+    @override
     def __str__(self):
         return (
             str(self.sender)[:4]
@@ -35,13 +37,15 @@ class Transaction:
             + str(self.signature.hex())[:]
         )
 
-    def Sign(self, privKey):  # Signs the transaction with the given private key
+    def Sign(
+        self, privKey: str
+    ) -> "Transaction":  # Signs the transaction with the given private key
         self.signature = RSA_sig(privKey, str(self).encode("utf-8"))
         return self
 
-    def Verify(self, pubkey):  # Verifies a signed transaction with a public key
+    def Verify(self, pubkey: str):  # Verifies a signed transaction with a public key
         verify_sig(pubkey, self.signature, str(unsigned(self)).encode("utf-8"))
 
 
-def unsigned(t):
+def unsigned(t: Transaction) -> Transaction:
     return Transaction(t.sender, t.reciever, t.amount, t.gasFee)
