@@ -3,9 +3,12 @@ import "./App.css";
 
 const inputClasses =
   "border cream text-secondary rounded-lg text-sm focus:ring-blue-500 block w-full p-2.5   dark:placeholder-gray-400  dark:focus:ring-blue-500";
-const buttonClasses = "bg-primary px-3 text-secondary ";
-const tableClasses = "table-auto mx-auto bg-secondary border-separate border-spacing-2 border border-secondary"
-const tableRowClasses = "border bg-primary rounded-lg border-slate-600";
+const buttonClasses = "bg-primary px-3 text-tan ";
+const tableClasses =
+  "table-auto mx-auto bg-secondary border-separate border-spacing-2 border border-secondary";
+const tableRowCellClasses = "border bg-primary rounded-lg border-slate-600";
+const tableRowToggledCellClasses =
+  "border bg-[#23e200]  rounded-lg border-slate-600";
 const transactionTableHeaderClasses =
   "border table-header text-secondary cream border-secondary rounded-lg";
 const minerTableHeaderClasses =
@@ -221,7 +224,7 @@ const TransactionTableRow = ({
         }
       >
         {rowData.map((data, i) => (
-          <td key={i} className={tableRowClasses}>
+          <td key={i} className={tableRowCellClasses}>
             {data}
           </td>
         ))}
@@ -277,63 +280,109 @@ const TransactionTable = ({
 
 type MinerTableProps = {
   minerTransactions: Transaction[];
-  moveToBlockChainCallback: (t: Transaction) => void;
+  moveToBlockChainCallback: (tl: Array<string>) => void;
 };
 
 const MinerTable = ({
   minerTransactions,
   moveToBlockChainCallback: moveToBlockchainCallback,
 }: MinerTableProps) => {
-  return minerTransactions.length > 0 ? (
-    <table className={tableClasses}>
-      <thead>
-        <tr>
-          {["Sender", "Receiver", "Amount", "Gas", "Key"].map((header, i) => (
-            <th key={i} className={minerTableHeaderClasses}>
-              {header}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {minerTransactions.map((transaction, i) => {
-          const rowData = [
-            transaction.sender
-              ? transaction.sender.slice(
-                  transaction.sender.length - 6,
-                  transaction.sender.length,
-                )
-              : "",
-            transaction.receiver
-              ? transaction.receiver.slice(
-                  transaction.receiver.length - 6,
-                  transaction.receiver.length,
-                )
-              : "",
-            transaction.amount,
-            transaction.gasFee,
-            transaction.signature ? transaction.signature.slice(transaction.signature.length - 4, transaction.signature.length) : ""
-          ];
-          return (
-            <tr key={i} onClick={() => moveToBlockchainCallback(transaction)}>
-              <td className={tableRowClasses}>{rowData[0]}</td>
-              <td className={tableRowClasses}>{rowData[1]}</td>
-              <td className={tableRowClasses}>{rowData[2]}</td>
-              <td className={tableRowClasses}>{rowData[3]}</td>
-              <td className={tableRowClasses}>{rowData[4]}</td>
+  const [toggledTransactions, setToggledTransactions] = useState<number[]>([]);
+
+  const getToggledTransactions = () => {
+    return toggledTransactions.map((i) => minerTransactions[i].signature);
+  };
+
+  const toggleTransaction = (i: number) => {
+    if (toggledTransactions.includes(i)) {
+      setToggledTransactions(
+        toggledTransactions.filter((transaction) => transaction != i),
+      );
+    } else {
+      setToggledTransactions([...toggledTransactions, i]);
+    }
+  };
+
+  return (
+    <>
+      <div className="flex justify-evenly items-center my-2">
+        <button className={buttonClasses}>Hash</button>
+        <button
+          onClick={() => moveToBlockchainCallback(getToggledTransactions())}
+          className={buttonClasses}
+        >
+          Auto
+        </button>
+      </div>
+      {minerTransactions.length > 0 && (
+        <table className={tableClasses}>
+          <thead>
+            <tr>
+              {["Sender", "Receiver", "Amount", "Gas", "Key", "Send"].map(
+                (header, i) => (
+                  <th key={i} className={minerTableHeaderClasses}>
+                    {header}
+                  </th>
+                ),
+              )}
             </tr>
-          );
-        })}
-      </tbody>
-    </table>
-  ) : (
-    <h1 className="bold"></h1>
+          </thead>
+          <tbody>
+            {minerTransactions.map((transaction, i) => {
+              const rowData = [
+                transaction.sender
+                  ? transaction.sender.slice(
+                      transaction.sender.length - 6,
+                      transaction.sender.length,
+                    )
+                  : "",
+                transaction.receiver
+                  ? transaction.receiver.slice(
+                      transaction.receiver.length - 6,
+                      transaction.receiver.length,
+                    )
+                  : "",
+                transaction.amount,
+                transaction.gasFee,
+                transaction.signature
+                  ? transaction.signature.slice(
+                      transaction.signature.length - 4,
+                      transaction.signature.length,
+                    )
+                  : "",
+              ];
+              const rowCellClass = toggledTransactions.includes(i)
+                ? tableRowToggledCellClasses
+                : tableRowCellClasses;
+              const rowClass = toggledTransactions.includes(i)
+                ? "-translate-x-2"
+                : "";
+              return (
+                <tr key={i} className={rowClass}>
+                  <td className={rowCellClass}>{rowData[0]}</td>
+                  <td className={rowCellClass}>{rowData[1]}</td>
+                  <td className={rowCellClass}>{rowData[2]}</td>
+                  <td className={rowCellClass}>{rowData[3]}</td>
+                  <td className={rowCellClass}>{rowData[4]}</td>
+                  <td
+                    className={rowCellClass}
+                    onClick={() => toggleTransaction(i)}
+                  >
+                    <button className="text-center">X</button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      )}
+    </>
   );
 };
 
 type MinerPageProps = {
   minedTransactions: Transaction[];
-  mineTransactionCallback: (transaction: TransactionToMine) => void;
+  mineTransactionCallback: (transaction: TransactionsToMine) => void;
   getBlockNumberCallback: () => string;
 };
 
@@ -359,18 +408,17 @@ const MinerPage = ({
     setHash(b.sender);
   };
 
-  const mineTransaction = (t: Transaction) => {
-    const transactionToMine: TransactionToMine = {
-      sender: t.sender,
-      amount: t.amount,
+  const mineTransaction = (t: Array<string>) => {
+
+    console.log(t)
+    const transactionsToMine: TransactionsToMine = {
       reward: reward.toString(),
-      gasFee: t.gasFee,
       nonce: nonce,
-      signature: t.signature,
+      signatures: t,
       reward_address: rewardAddress,
       blockNumber: getBlockNumberCallback(),
     };
-    mineTransactionCallback(transactionToMine);
+    mineTransactionCallback(transactionsToMine);
   };
 
   return (
@@ -407,10 +455,6 @@ const MinerPage = ({
           label="Reward Address"
           placeholder="address to send reward to"
         />
-        <div className="flex justify-evenly items-center my-2">
-          <button className={buttonClasses}>Hash</button>
-          <button className={buttonClasses}>Auto</button>
-        </div>
 
         <MinerTable
           moveToBlockChainCallback={mineTransaction}
@@ -518,16 +562,14 @@ type Transaction = {
   gasFee: string;
 };
 
-type TransactionToMine = {
-  sender: string;
+
+type TransactionsToMine = {
+  signatures: string[];
   reward_address: string;
-  amount: string;
-  signature: string;
-  gasFee: string;
+  reward: string;
   nonce: string;
   blockNumber: string;
-  reward: string;
-};
+}
 
 type BlocksProps = {
   blocks: BlockInfo[];
@@ -569,28 +611,30 @@ const App = () => {
 
   const moveToMinerTransaction = (transaction: Transaction) => {
     // TODO: also remove the transaction from the transaction table
+    const tl = transactions.filter((t) => t[3] != transaction.signature);
+    setTransactions(tl);
     setMinedTransactions([...minerTransactions, transaction]);
   };
 
   /*
    * Add a tranasction to the blockchain
    */
-  const mineTransaction = (t: TransactionToMine) => {
+  const mineTransaction = (t: TransactionsToMine) => {
     // TODO: remove t from the minertable, then call "/mine_block"
-    // TODO: refresh the blockChain so that it displays newblockchain
     // TODO: also fix bug with the transactions list not being sent into the external api
 
+    console.log(t)
     const minerTs = minerTransactions.filter(
-      (minerTransaction) => t.signature != minerTransaction.signature,
-    );
+      (minerTransaction) => t.signatures.includes(minerTransaction.signature),
+          );
     setMinedTransactions(minerTs);
     console.log({
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        transaction_hash: t.signature,
+      body: ({
+        transaction_hashes: t.signatures,
         nonce: t.nonce,
         blockNumber: (blocks.length + 1).toString(),
         reward: t.reward,
@@ -603,7 +647,7 @@ const App = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        transaction_hash: t.signature,
+        transaction_hashes: t.signatures,
         nonce: t.nonce,
         blockNumber: blocks.length.toString(),
         reward: t.reward,

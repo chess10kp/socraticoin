@@ -7,7 +7,7 @@ from richiii.Chain import BlockChain, MineBlock, mine_block_with_feedback
 from win.wincringe import Transaction
 
 
-blockChain: None | BlockChain = None
+blockChain: BlockChain = None  # pyright: ignore[reportAssignmentType]
 
 app = FastAPI(
     title="Socraticoin",
@@ -61,11 +61,6 @@ def initialize_chain():
         UserA.get_private_key()
     )
 
-    # Submit transactions to the transaction queue
-    # blockChain.transactionQueue.append(t1)
-    # blockChain.transactionQueue.append(t2)
-    # blockChain.transactionQueue.append(t3)
-
     # Create Genesis Block (block 0), no previous hash
     blockChain.submitBlock(
         MineBlock(
@@ -116,16 +111,11 @@ def initialize_chain():
 def get_blockchain():
     if not blockChain:
         initialize_chain()
-    nodes: dict[list]
+    nodes: dict[int, list[Block]]
     nodes = {}
     for i, node in enumerate(blockChain.blockList):
         print(node)
         parsed = parse_block_info(node)
-        # self.sender = sender
-        # self.reciever = reciever
-        # self.amount = amount
-        # self.signature = b""
-        # self.gasFee = gasFee
         parsed["transactions"] = [
             [
                 transaction.sender,
@@ -190,7 +180,7 @@ class TransactionParams(BaseModel):
 
 class TransactionToMineParams(BaseModel):
     blockNumber: int
-    transaction_hash: str
+    transaction_hashes: list[str]
     nonce: str
     reward: str
     reward_address: str
@@ -234,7 +224,7 @@ def create_new_transaction(data: TransactionParams):
 
 
 @app.post("/mine_block")
-def mine_block(data: None | TransactionToMineParams = None):
+def mine_block(data: TransactionToMineParams):
     print(data)
     if not data:
         return
@@ -243,17 +233,16 @@ def mine_block(data: None | TransactionToMineParams = None):
 
     data = data.dict()
 
-    transactions = [
-        transaction
-        for transaction in blockChain.transactionQueue
-        if transaction.signature.hex() == data["transaction_hash"]
-    ]
-    for t in blockChain.transactionQueue:
-        print(t.signature.hex())
-        print(t.sender)
-        print(t.signature)
-        print(t.reciever)
-        print(t.amount)
+    transactions = []
+    for hash in data["transaction_hashes"]:
+        for transaction in blockChain.transactionQueue:
+            if transaction.signature.hex() == hash:
+                transactions.append(transaction)
+
+    if not transactions:
+        raise Exception(
+            "Transaction not found in transactionQueue but sent through /mine_block"
+        )
 
     print(data)
     block = Block(
@@ -270,8 +259,16 @@ def mine_block(data: None | TransactionToMineParams = None):
         block, nonce=data["nonce"], difficulty=blockChain.difficulty
     )
 
-    print(t.Verify(t.sender))
     blockChain.submitBlock(new_block)
+
+    # TODO: verify the transaction THEN remove the transaction from the block
+    blockChain.transactionQueue = [
+        transaction
+        for transaction in blockChain.transactionQueue
+        if transaction.signature.hex() != data["transaction_hashes"]
+    ]
+
+    return {"message": "Block mined!"}
 
 
 if __name__ == "__main__":
