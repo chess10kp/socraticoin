@@ -680,7 +680,26 @@ const App = () => {
     fetch("http://127.0.0.1:8000/transactions")
       .then((response) => response.json())
       .then((data) => {
-        setTransactions(data.transactions);
+        const fetchedTransactions = data.transactions;
+        if (fetchedTransactions.length == transactions.length + 1 ) { 
+          // when a new transactions has been added, do not refresh the whole list
+          // this is because some of the transactiosn may be in the minerpage, still pending to be mined
+          // so we only add the new transaction to the list
+          let transactionToAdd = null; 
+          let p1 = 0; 
+          let p2 = 0; 
+          while (p1 < fetchedTransactions.length && p2 < transactions.length) {
+            if (fetchedTransactions[p1][3] != transactions[p2][3]) {
+              transactionToAdd = fetchedTransactions[p1];
+              break;
+            }
+            p1++;
+            p2++;
+          }
+          setTransactions([...transactions, transactionToAdd])
+        } else { // fresh call
+          setTransactions(fetchedTransactions);
+        } 
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
