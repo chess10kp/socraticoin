@@ -75,6 +75,8 @@ const HomePage = ({ refresh }: { refresh: any }) => {
   const [sign, setSign] = useState("");
   const [gas, setGas] = useState(10);
 
+  const { sendNotification } = useNotification();
+
   const handleAddress = (address: string) => setAddress(address);
   const handleSend = (send: string) => setSend(send);
   const handleSendAmount = (amount: number) => setAmount(amount);
@@ -125,6 +127,8 @@ const HomePage = ({ refresh }: { refresh: any }) => {
     })
       .then((response) => response.json())
       .then((data) => {
+        console.log(data)
+        sendNotification("Transaction", "Transaction was successful");
         refresh();
       });
   };
@@ -603,7 +607,7 @@ type NotifProps = {
 };
 
 const Notif = ({ heading, message, visible }: NotifProps) => {
-  const [animate, setAnimate] = useState(false);
+  const [animate, setAnimate] = useState(true);
 
   // Function to show the notification
   const showNotification = () => {
@@ -611,19 +615,19 @@ const Notif = ({ heading, message, visible }: NotifProps) => {
 
     // Set a timeout to hide the notification after a specified time
     setTimeout(() => {
-      setAnimate(false); // Remove the animation class after the animation
-    }, 3000); // Show for 3 seconds
+      setAnimate(false); 
+    }, 3000); 
   };
 
-  // Effect to show the notification (call this function to trigger the alert)
   useEffect(() => {
     showNotification();
-  }, []); // Empty dependency array ensures this runs only on mount
+  }, [visible]); 
+  console.log(visible)
   return (
     <>
       {visible && (
         <div
-          className={`bg-orange-100 absolute border-l-4 border-orange-500 text-orange-700 p-4 ${animate ? "slide-in" : ""}`}
+          className={`bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 ${animate ? "slide-in" : ""}`}
           role="alert"
         >
           <p className="font-bold">{heading}</p>
@@ -648,10 +652,11 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
   const [notif, setNotif] = useState({
     heading: "",
     message: "",
-    visible: false,
+    visible: true,
   });
 
   const sendNotification = (heading: string, message: string) => {
+    console.log("hi")
     setNotif({ heading, message, visible: true });
 
     setTimeout(() => {
@@ -763,9 +768,6 @@ const App = () => {
       .then((response) => response.json())
       .then((data) => {
         const fetchedTransactions = data.transactions;
-        console.log("hi")
-        console.log(fetchedTransactions, transactions)
-        console.log("hi")
         if (fetchedTransactions.length == transactions.length + 1) {
           // when a new transactions has been added, do not refresh the whole list
           // this is because some of the transactiosn may be in the minerpage, still pending to be mined
@@ -773,20 +775,18 @@ const App = () => {
           let transactionToAdd = [];
           if (transactions.length == 0) {
             transactionToAdd = fetchedTransactions[0];
+          } else {
+            let p1 = 0;
+            let p2 = 0;
+            while (p1 < fetchedTransactions.length) {
+              if (fetchedTransactions[p1][3] != transactions[p2][3]) {
+                transactionToAdd = fetchedTransactions[p1];
+                break;
+              }
+              p1++;
+              if (p2 < transactions.length - 1) p2++;
             }
-          else {
-          let p1 = 0;
-          let p2 = 0;
-          while (p1 < fetchedTransactions.length) {
-            if (fetchedTransactions[p1][3] != transactions[p2][3]) {
-              transactionToAdd = fetchedTransactions[p1];
-              break;
-            }
-            p1++;
-            if (p2 < transactions.length - 1)
-            p2++;
           }
-          } 
           if (transactionToAdd !== null)
             setTransactions([...transactions, transactionToAdd]);
         } else if (fetchedTransactions.length == transactions.length) {
@@ -821,6 +821,7 @@ const App = () => {
   }, []);
 
   return (
+    <div className="relative">
     <NotificationProvider>
       <div className="relative">
         <Blocks blocks={blocks} />
@@ -849,6 +850,7 @@ const App = () => {
         </main>
       </div>
     </NotificationProvider>
+    </div>
   );
 };
 
