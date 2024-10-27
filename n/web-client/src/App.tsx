@@ -1,4 +1,10 @@
-import { useState, useEffect } from "react";
+import {
+  useState,
+  useEffect,
+  useContext,
+  createContext,
+  ReactNode,
+} from "react";
 import "./App.css";
 
 const inputClasses =
@@ -75,7 +81,6 @@ const HomePage = ({ refresh }: { refresh: any }) => {
   const handleSign = (sign: string) => setSign(sign);
   const handleGas = (gas: number) => setGas(gas);
 
-  // TODO: remove after DEBUG
   useEffect(() => {
     fetch("http://127.0.0.1:8000/private_key")
       .then((response) => response.json())
@@ -104,13 +109,6 @@ const HomePage = ({ refresh }: { refresh: any }) => {
   }, []);
 
   const handleSubmit = (e: any) => {
-    console.log({
-      address: address,
-      send_address: send,
-      amount_to_send: amount.toString(),
-      sign: sign,
-      gas: gas.toString(),
-    });
     e.preventDefault();
     fetch("http://127.0.0.1:8000/new_transaction", {
       method: "POST",
@@ -127,7 +125,6 @@ const HomePage = ({ refresh }: { refresh: any }) => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         refresh();
       });
   };
@@ -246,7 +243,9 @@ const TransactionTable = ({
   return (
     <div>
       <Heading title="Transactions" />
-      {transactions.length > 0 ? (
+      {transactions != null &&
+      transactions.length > 0 &&
+      transactions[0].length > 1 ? (
         <table className={tableClasses}>
           <thead>
             <tr>
@@ -258,6 +257,8 @@ const TransactionTable = ({
             </tr>
           </thead>
           {transactions.map((transaction, i) => {
+            if (transactions === null) return <></>;
+            if (transaction.length < 5) return <></>;
             return (
               <TransactionTableRow
                 key={i}
@@ -404,12 +405,7 @@ const MinerPage = ({
   const handleRewardAddress = (rewardAddress: string) =>
     setRewardAddress(rewardAddress);
 
-  const autoFillMinerForm = (b: Transaction) => {
-    setHash(b.sender);
-  };
-
   const mineTransaction = (t: Array<string>) => {
-    console.log(t);
     const transactionsToMine: TransactionsToMine = {
       reward: reward.toString(),
       nonce: nonce,
@@ -603,21 +599,19 @@ const Blocks = ({ blocks }: BlocksProps) => {
 type NotifProps = {
   heading: string;
   message: string;
+  visible: boolean;
 };
 
-const Notif = ({ heading, message }: NotifProps) => {
-  const [visible, setVisible] = useState(false);
+const Notif = ({ heading, message, visible }: NotifProps) => {
   const [animate, setAnimate] = useState(false);
 
   // Function to show the notification
   const showNotification = () => {
-    setVisible(true);
     setAnimate(true);
 
     // Set a timeout to hide the notification after a specified time
     setTimeout(() => {
       setAnimate(false); // Remove the animation class after the animation
-      setTimeout(() => setVisible(false), 500); // Hide after the animation duration
     }, 3000); // Show for 3 seconds
   };
 
@@ -640,12 +634,64 @@ const Notif = ({ heading, message }: NotifProps) => {
   );
 };
 
+interface NotificationContextType {
+  sendNotification: (heading: string, message: string) => void;
+}
+
+const NotificationContext = createContext<NotificationContextType | undefined>(
+  undefined,
+);
+
+export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
+  const [notif, setNotif] = useState({
+    heading: "",
+    message: "",
+    visible: false,
+  });
+
+  const sendNotification = (heading: string, message: string) => {
+    setNotif({ heading, message, visible: true });
+
+    setTimeout(() => {
+      setNotif((prev) => ({ ...prev, visible: false }));
+    }, 3000);
+  };
+
+  return (
+    <NotificationContext.Provider value={{ sendNotification }}>
+      {notif.visible && (
+        <Notif
+          heading={notif.heading}
+          message={notif.message}
+          visible={notif.visible}
+        />
+      )}
+      {children}
+    </NotificationContext.Provider>
+  );
+};
+
+// Custom hook to use the notification context
+export const useNotification = () => {
+  const context = useContext(NotificationContext);
+  if (!context) {
+    throw new Error(
+      "useNotification must be used within a NotificationProvider",
+    );
+  }
+  return context;
+};
+
 const App = () => {
-  const [transactions, setTransactions] = useState([[""]]);
+  const [transactions, setTransactions] = useState([]);
   const [blocks, setBlocks] = useState<Array<BlockInfo>>([]);
   const [minerTransactions, setMinedTransactions] = useState<
     Array<Transaction>
   >([]);
+
+  const c = useContext(NotificationContext);
 
   const moveToMinerTransaction = (transaction: Transaction) => {
     const tl = transactions.filter((t) => t[3] != transaction.signature);
@@ -660,7 +706,6 @@ const App = () => {
     // TODO: remove t from the minertable, then call "/mine_block"
     // TODO: also fix bug with the transactions list not being sent into the external api
 
-    console.log(t);
     const minerTs = minerTransactions.filter((minerTransaction) =>
       t.signatures.includes(minerTransaction.signature),
     );
@@ -718,22 +763,32 @@ const App = () => {
       .then((response) => response.json())
       .then((data) => {
         const fetchedTransactions = data.transactions;
+        console.log("hi")
+        console.log(fetchedTransactions, transactions)
+        console.log("hi")
         if (fetchedTransactions.length == transactions.length + 1) {
           // when a new transactions has been added, do not refresh the whole list
           // this is because some of the transactiosn may be in the minerpage, still pending to be mined
           // so we only add the new transaction to the list
-          let transactionToAdd = null;
+          let transactionToAdd = [];
+          if (transactions.length == 0) {
+            transactionToAdd = fetchedTransactions[0];
+            }
+          else {
           let p1 = 0;
           let p2 = 0;
-          while (p1 < fetchedTransactions.length && p2 < transactions.length) {
+          while (p1 < fetchedTransactions.length) {
             if (fetchedTransactions[p1][3] != transactions[p2][3]) {
               transactionToAdd = fetchedTransactions[p1];
               break;
             }
             p1++;
+            if (p2 < transactions.length - 1)
             p2++;
           }
-          setTransactions([...transactions, transactionToAdd]);
+          } 
+          if (transactionToAdd !== null)
+            setTransactions([...transactions, transactionToAdd]);
         } else if (fetchedTransactions.length == transactions.length) {
           // page refreshed due to various update calls, but nothing added
           return;
@@ -746,16 +801,6 @@ const App = () => {
         console.error("Error fetching data:", error);
       });
   };
-
-  const sendNotification = ({
-    heading,
-    message,
-    timeout,
-  }: {
-    heading: string;
-    message: string;
-    timeout: number;
-  }) => {};
 
   useEffect(() => {
     refreshTransactions();
@@ -776,33 +821,34 @@ const App = () => {
   }, []);
 
   return (
-    <div className="relative">
-      <Notif heading="hi" message="Test message" />
-      <Blocks blocks={blocks} />
-      <main className="flex flex-col">
-        <div className="flex">
-          <div className="flex-1 menu-shadow p-2 border-2 border-secondary">
-            <HomePage refresh={refreshTransactions} />
+    <NotificationProvider>
+      <div className="relative">
+        <Blocks blocks={blocks} />
+        <main className="flex flex-col">
+          <div className="flex">
+            <div className="flex-1 menu-shadow p-2 border-2 border-secondary">
+              <HomePage refresh={refreshTransactions} />
+            </div>
+            <div className="flex-1 menu-shadow p-2 border-2 border-secondary ">
+              <TransactionTable
+                moveToMinerTransactionCallback={moveToMinerTransaction}
+                transactions={transactions}
+              />
+            </div>
+            <div className="flex-1 menu-shadow p-2 border-2 border-secondary">
+              <MinerPage
+                getBlockNumberCallback={getBlockNumber}
+                minedTransactions={minerTransactions}
+                mineTransactionCallback={mineTransaction}
+              />
+            </div>
           </div>
-          <div className="flex-1 menu-shadow p-2 border-2 border-secondary ">
-            <TransactionTable
-              moveToMinerTransactionCallback={moveToMinerTransaction}
-              transactions={transactions}
-            />
+          <div className="">
+            <Addresses />
           </div>
-          <div className="flex-1 menu-shadow p-2 border-2 border-secondary">
-            <MinerPage
-              getBlockNumberCallback={getBlockNumber}
-              minedTransactions={minerTransactions}
-              mineTransactionCallback={mineTransaction}
-            />
-          </div>
-        </div>
-        <div className="">
-          <Addresses />
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
+    </NotificationProvider>
   );
 };
 
