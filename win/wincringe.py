@@ -1,4 +1,4 @@
-from typing import override
+from typing_extensions import override
 from maria_compute.RSA_new import RSA_sig, verify_sig
 
 
