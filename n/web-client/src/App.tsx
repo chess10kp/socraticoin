@@ -23,6 +23,11 @@ const minerTableHeaderClasses =
 const addressClasses =
   "border-2 border-primary rounded-none cream text-secondary rounded-lg text-sm focus:ring-blue-500 block w-full p-2.5   dark:placeholder-gray-400  dark:focus:ring-blue-500";
 
+function isNumeric(str: any) {
+  if (typeof str != "string") return false;
+  return !isNaN(str) && !isNaN(parseFloat(str));
+}
+
 const InputForm = ({
   label,
   placeholder,
@@ -110,8 +115,30 @@ const HomePage = ({ refresh }: { refresh: any }) => {
       });
   }, []);
 
+  const validateForm = () => {
+    const validations = [
+      { condition: !address, message: "Address not valid" },
+      { condition: !send, message: "Send address not valid" },
+      { condition: !amount, message: "Amount not valid" },
+      { condition: !isNumeric(amount), message: "Amount should be number" },
+      { condition: amount <= 0, message: "Amount should be positive" },
+      { condition: !sign, message: "Sign not valid" },
+      { condition: !gas, message: "Gas not valid" },
+      { condition: !isNumeric(gas), message: "Gas should be numbers" },
+      { condition: gas <= 0, message: "Gas should be positive" },
+    ]
+    for (const { condition, message } of validations) {
+      if (condition) {
+      sendNotification("Transaction", message);
+      return false;
+      }
+    }
+    return true;  
+  };
+
   const handleSubmit = (e: any) => {
     e.preventDefault();
+    if (!validateForm()) return;
     fetch("http://127.0.0.1:8000/new_transaction", {
       method: "POST",
       headers: {
@@ -127,7 +154,7 @@ const HomePage = ({ refresh }: { refresh: any }) => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data)
+        console.log(data);
         sendNotification("Transaction", "Transaction was successful");
         refresh();
       });
@@ -402,6 +429,8 @@ const MinerPage = ({
   const [reward, setReward] = useState(100);
   const [rewardAddress, setRewardAddress] = useState("");
 
+  const {sendNotification} = useNotification();
+
   const handleHash = (hash: string) => setHash(hash);
   const handleNonce = (nonce: string) => setNonce(nonce);
   const handlePrev = (prev: string) => setPrev(prev);
@@ -409,7 +438,28 @@ const MinerPage = ({
   const handleRewardAddress = (rewardAddress: string) =>
     setRewardAddress(rewardAddress);
 
+const validateForm = () => {
+  const validations = [
+    { condition: !hash, message: "Hash not valid" },
+    { condition: !nonce, message: "Nonce not valid" },
+    { condition: !prev, message: "Prev not valid" },
+    { condition: !reward, message: "Reward not valid" },
+    { condition: reward && !isNumeric(reward), message: "Reward should be number" },
+    { condition: reward && reward <= 0, message: "Reward should be positive" },
+    { condition: !rewardAddress, message: "Reward Address not valid" },
+  ];
+
+  for (const { condition, message } of validations) {
+    if (condition) {
+      sendNotification("MinerForm", message);
+      return false;
+    }
+  }
+  
+  return true;
+};
   const mineTransaction = (t: Array<string>) => {
+    if (!validateForm()) return;
     const transactionsToMine: TransactionsToMine = {
       reward: reward.toString(),
       nonce: nonce,
@@ -609,31 +659,25 @@ type NotifProps = {
 const Notif = ({ heading, message, visible }: NotifProps) => {
   const [animate, setAnimate] = useState(true);
 
-  // Function to show the notification
-  const showNotification = () => {
-    setAnimate(true);
-
-    // Set a timeout to hide the notification after a specified time
-    setTimeout(() => {
-      setAnimate(false); 
-    }, 3000); 
-  };
-
   useEffect(() => {
-    showNotification();
-  }, [visible]); 
-  console.log(visible)
+    if (visible) {
+      setAnimate(true);
+
+      // Set a timeout to hide the notification after a specified time
+      setTimeout(() => {
+        setAnimate(false);
+      }, 5000);
+    }
+  }, [visible]);
   return (
     <>
-      {visible && (
-        <div
-          className={`bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 ${animate ? "slide-in" : ""}`}
-          role="alert"
-        >
-          <p className="font-bold">{heading}</p>
-          <p>{message}</p>
-        </div>
-      )}
+      <div
+        className={`bg-orange-100 fixed left-0 top-0 z-50 border-l-4 border-orange-500 text-orange-700 p-4 ${animate ? "slide-in" : ""}`}
+        role="alert"
+      >
+        <p className="font-bold">{heading}</p>
+        <p>{message}</p>
+      </div>
     </>
   );
 };
@@ -656,12 +700,12 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
   });
 
   const sendNotification = (heading: string, message: string) => {
-    console.log("hi")
+    console.log("hi");
     setNotif({ heading, message, visible: true });
 
     setTimeout(() => {
       setNotif((prev) => ({ ...prev, visible: false }));
-    }, 3000);
+    }, 5000);
   };
 
   return (
@@ -821,7 +865,6 @@ const App = () => {
   }, []);
 
   return (
-    <div className="relative">
     <NotificationProvider>
       <div className="relative">
         <Blocks blocks={blocks} />
@@ -850,7 +893,6 @@ const App = () => {
         </main>
       </div>
     </NotificationProvider>
-    </div>
   );
 };
 
