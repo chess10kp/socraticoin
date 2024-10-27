@@ -14,7 +14,7 @@ def HashBlock(block: Block):
     return block
 
 
-def MineBlock(block: Block = None, difficulty=0):
+def MineBlock(block: Block | None = None, difficulty: int = 0):
     """Computes a correct hash for a block, according to the provided difficulty"""
 
     if block is None:  # If no block provided, return
@@ -26,17 +26,20 @@ def MineBlock(block: Block = None, difficulty=0):
     # Compute hashes until one meets the difficulty requirement
     block.nonce = 0
     while block.currHash[0:difficulty] != difficultyString:
-        HashBlock(block)
+        _ = HashBlock(block)
         block.nonce += 1
 
     return block
 
 
 def mine_block_with_feedback(
-    block: Block = None, difficulty=0, nonce: str | None = None, feedback: bool = False
+    block: Block | None = None,
+    difficulty: int = 0,
+    nonce: str | None = None,
+    feedback: bool = False,
 ):
     "Computes a correct hash for a block, according to the provided difficulty, returns feedback for each nonce on success or fail"
-    if block is None:  # If no block provided, return
+    if block is None:
         return None
 
     # difficulty = num of 0's the hash should start with
@@ -46,7 +49,7 @@ def mine_block_with_feedback(
 
     # Compute hashes until one meets the difficulty requirement
     while block.currHash[0:difficulty] != difficultyString:
-        HashBlock(block)
+        _ = HashBlock(block)
         if feedback and block.currHash[0:difficulty] != difficultyString:
             raise Exception(
                 f"{block.currHash[0:8]} does not meet difficulty: {difficulty}"
@@ -61,8 +64,8 @@ class BlockChain:
         self.transactionQueue: list[
             Transaction
         ] = []  # Transactions waiting to be added to blocks
-        self.genesisBlock: Block = None  # First block in the chain
-        self.currBlock: Block = None  # Last block in the chain
+        self.genesisBlock: Block | None = None  # First block in the chain
+        self.currBlock: Block | None = None  # Last block in the chain
         self.difficulty: int = (
             3  # How computationally hard must hashes be? (36x exponential)
         )
@@ -75,7 +78,7 @@ class BlockChain:
         self.Users.append(a)
         return a
 
-    def submitBlock(self, b):
+    def submitBlock(self, b: Block):
         verified: str = self.VerifyBlock(b)
         if verified != "":
             return verified
@@ -85,7 +88,7 @@ class BlockChain:
         self.currBlock = b
         return "Block added to chain! Hash: " + b.currHash[0:8]
 
-    def VerifyBlock(self, b):
+    def VerifyBlock(self, b: Block):
         # Verify Block difficulty
         if b.currHash[0 : self.difficulty] != "0" * self.difficulty:
             return (
@@ -121,7 +124,7 @@ class BlockChain:
             self.genesisBlock = b
             return ""  # Block is valid
         # Verify Block order (if not genesis block)
-        elif b.blockNumber != (self.currBlock.blockNumber + 1):
+        elif self.currBlock and (b.blockNumber != (self.currBlock.blockNumber + 1)):
             return (
                 "Block refused, blockNumber: "
                 + str(b.blockNumber)
@@ -129,7 +132,7 @@ class BlockChain:
                 + str(self.currBlock.blockNumber)
             )
         # Verify Hash order (if not genesis block)
-        elif b.prevHash != self.currBlock.currHash:
+        elif self.currBlock and b.prevHash != self.currBlock.currHash:
             return (
                 "Block refused, prevHash: "
                 + b.prevHash[0:8]
