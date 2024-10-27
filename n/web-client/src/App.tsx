@@ -390,18 +390,12 @@ const MinerTable = ({
                 ? "-translate-x-2"
                 : "";
               return (
-                <tr key={i} className={rowClass}>
+                <tr key={i} className={rowClass} onClick={() => toggleTransaction(i)}>
                   <td className={rowCellClass}>{rowData[0]}</td>
                   <td className={rowCellClass}>{rowData[1]}</td>
                   <td className={rowCellClass}>{rowData[2]}</td>
                   <td className={rowCellClass}>{rowData[3]}</td>
                   <td className={rowCellClass}>{rowData[4]}</td>
-                  <td
-                    className={rowCellClass}
-                    onClick={() => toggleTransaction(i)}
-                  >
-                    <button className="text-center">X</button>
-                  </td>
                 </tr>
               );
             })}
