@@ -409,8 +409,7 @@ const MinerPage = ({
   };
 
   const mineTransaction = (t: Array<string>) => {
-
-    console.log(t)
+    console.log(t);
     const transactionsToMine: TransactionsToMine = {
       reward: reward.toString(),
       nonce: nonce,
@@ -562,14 +561,13 @@ type Transaction = {
   gasFee: string;
 };
 
-
 type TransactionsToMine = {
   signatures: string[];
   reward_address: string;
   reward: string;
   nonce: string;
   blockNumber: string;
-}
+};
 
 type BlocksProps = {
   blocks: BlockInfo[];
@@ -602,6 +600,46 @@ const Blocks = ({ blocks }: BlocksProps) => {
   );
 };
 
+type NotifProps = {
+  heading: string;
+  message: string;
+};
+
+const Notif = ({ heading, message }: NotifProps) => {
+  const [visible, setVisible] = useState(false);
+  const [animate, setAnimate] = useState(false);
+
+  // Function to show the notification
+  const showNotification = () => {
+    setVisible(true);
+    setAnimate(true);
+
+    // Set a timeout to hide the notification after a specified time
+    setTimeout(() => {
+      setAnimate(false); // Remove the animation class after the animation
+      setTimeout(() => setVisible(false), 500); // Hide after the animation duration
+    }, 3000); // Show for 3 seconds
+  };
+
+  // Effect to show the notification (call this function to trigger the alert)
+  useEffect(() => {
+    showNotification();
+  }, []); // Empty dependency array ensures this runs only on mount
+  return (
+    <>
+      {visible && (
+        <div
+          className={`bg-orange-100 absolute border-l-4 border-orange-500 text-orange-700 p-4 ${animate ? "slide-in" : ""}`}
+          role="alert"
+        >
+          <p className="font-bold">{heading}</p>
+          <p>{message}</p>
+        </div>
+      )}
+    </>
+  );
+};
+
 const App = () => {
   const [transactions, setTransactions] = useState([[""]]);
   const [blocks, setBlocks] = useState<Array<BlockInfo>>([]);
@@ -610,7 +648,6 @@ const App = () => {
   >([]);
 
   const moveToMinerTransaction = (transaction: Transaction) => {
-    // TODO: also remove the transaction from the transaction table
     const tl = transactions.filter((t) => t[3] != transaction.signature);
     setTransactions(tl);
     setMinedTransactions([...minerTransactions, transaction]);
@@ -623,23 +660,23 @@ const App = () => {
     // TODO: remove t from the minertable, then call "/mine_block"
     // TODO: also fix bug with the transactions list not being sent into the external api
 
-    console.log(t)
-    const minerTs = minerTransactions.filter(
-      (minerTransaction) => t.signatures.includes(minerTransaction.signature),
-          );
+    console.log(t);
+    const minerTs = minerTransactions.filter((minerTransaction) =>
+      t.signatures.includes(minerTransaction.signature),
+    );
     setMinedTransactions(minerTs);
     console.log({
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: ({
+      body: {
         transaction_hashes: t.signatures,
         nonce: t.nonce,
         blockNumber: (blocks.length + 1).toString(),
         reward: t.reward,
         reward_address: t.reward_address,
-      }),
+      },
     });
     fetch("http://127.0.0.1:8000/mine_block", {
       method: "POST",
@@ -681,13 +718,13 @@ const App = () => {
       .then((response) => response.json())
       .then((data) => {
         const fetchedTransactions = data.transactions;
-        if (fetchedTransactions.length == transactions.length + 1 ) { 
+        if (fetchedTransactions.length == transactions.length + 1) {
           // when a new transactions has been added, do not refresh the whole list
           // this is because some of the transactiosn may be in the minerpage, still pending to be mined
           // so we only add the new transaction to the list
-          let transactionToAdd = null; 
-          let p1 = 0; 
-          let p2 = 0; 
+          let transactionToAdd = null;
+          let p1 = 0;
+          let p2 = 0;
           while (p1 < fetchedTransactions.length && p2 < transactions.length) {
             if (fetchedTransactions[p1][3] != transactions[p2][3]) {
               transactionToAdd = fetchedTransactions[p1];
@@ -696,15 +733,29 @@ const App = () => {
             p1++;
             p2++;
           }
-          setTransactions([...transactions, transactionToAdd])
-        } else { // fresh call
+          setTransactions([...transactions, transactionToAdd]);
+        } else if (fetchedTransactions.length == transactions.length) {
+          // page refreshed due to various update calls, but nothing added
+          return;
+        } else {
+          // fresh call
           setTransactions(fetchedTransactions);
-        } 
+        }
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
   };
+
+  const sendNotification = ({
+    heading,
+    message,
+    timeout,
+  }: {
+    heading: string;
+    message: string;
+    timeout: number;
+  }) => {};
 
   useEffect(() => {
     refreshTransactions();
@@ -725,7 +776,8 @@ const App = () => {
   }, []);
 
   return (
-    <>
+    <div className="relative">
+      <Notif heading="hi" message="Test message" />
       <Blocks blocks={blocks} />
       <main className="flex flex-col">
         <div className="flex">
@@ -750,7 +802,7 @@ const App = () => {
           <Addresses />
         </div>
       </main>
-    </>
+    </div>
   );
 };
 

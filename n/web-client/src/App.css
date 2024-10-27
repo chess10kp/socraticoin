@@ -12,9 +12,23 @@
   background-color: rgb(250, 241, 218);
 }
 
-
 ::-webkit-scrollbar {
   width: 12px; /* Width of the scrollbar */
+}
+
+@keyframes slide-in {
+  0% {
+    transform: translateX(-100%); /* Start off-screen */
+    opacity: 0; /* Start invisible */
+  }
+  100% {
+    transform: translateX(0); /* End at original position */
+    opacity: 1; /* End visible */
+  }
+}
+
+.slide-in {
+  animation: slide-in 0.7s ease forwards; /* Duration and easing */
 }
 
 /* Scrollbar handle (thumb) */
