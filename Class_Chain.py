@@ -1,7 +1,7 @@
 ### Class_Chain.py # richiii
 # Contains 'BlockChain' class and mining funcs for implementing blockchain
 
-from Class_Block import *
+from Class_Block  import *
 from Class_Wallet import *
 from Cryptography import SHA256
 
@@ -17,9 +17,9 @@ def MineBlock(block: Block | None = None, difficulty: int = 0, nonce: str | None
 
     if block is None: 
         print("Tried to mine None!")
-        return None # If no block provided, return
+        return None
 
-    difficultyString = "0" * difficulty # difficulty = num of 0's the hash should start with
+    difficultyString = "0" * difficulty # difficulty = number of 0's the hash should start with
     block.nonce = int(nonce) if nonce else 0 # starts from 0 by default
 
     while block.currHash[0:difficulty] != difficultyString: # Compute hashes until one meets the difficulty requirement
@@ -31,18 +31,17 @@ def MineBlock(block: Block | None = None, difficulty: int = 0, nonce: str | None
 
 class BlockChain:
     def __init__(self):
-        self.transactionQueue: list[Transaction] = []  # Transactions waiting to be added to blocks
-        self.genesisBlock: Block | None = None  # First block in the chain
-        self.currBlock: Block | None = None  # Last block in the chain
-        self.difficulty: int = 3  # How computationally hard must hashes be? (36x exponential)
+        self.transactionQueue: list[Transaction] = [] # Transactions waiting to be added to blocks
+        self.genesisBlock: Block | None = None        # First block in the chain
+        self.currBlock: Block | None = None           # Last block in the chain
+        self.difficulty: int = 3                      # How computationally hard must hashes be? (36x exponential)
         
-        self.Users: list[Wallet] = [] # For convienience, users and block references are packaged with the blockchain class
+        self.Users: list[Wallet] = []                 # For convienience, users and block references are packaged with the blockchain class
         self.blockList: list[Block] = []
 
     def create_new_user(self):
-        a = Wallet()
-        self.Users.append(a)
-        return a
+        self.Users.append(Wallet())
+        return self.Users[-1]
 
     def submitBlock(self, b: Block):
         if self.VerifyBlock(b) != "": return self.VerifyBlock(b)
@@ -59,11 +58,11 @@ class BlockChain:
     def VerifyBlockGenesis(     self, b: Block): return (self.genesisBlock is None)    and (b.blockNumber == 0)
     def VerifyBlockOrder(       self, b: Block): return (b.blockNumber == 0)            or (b.blockNumber == (self.currBlock.blockNumber + 1))
     def VerifyBlockHashOrder(   self, b: Block): return (b.prevHash == "Genesis_Block") or (b.prevHash == self.currBlock.currHash)
-    def VerifyBlockTransactions(self, b: Block):
-        for t in b.transactions:
-            if (False): # TODO: Cannot verify transactions cause we can't get the key CLASS type from the key STRING type
-                return "Block refused, unverifiable transaction: " + str(t)
-        return True # Currently always returns true
+    def VerifyBlockTransactions(self, b: Block): return True # Currently always returns true
+    # TODO for verify transaction: Cannot verify transactions cause we can't get the key CLASS type from the key STRING type
+        # for t in b.transactions:
+        #     if (False): 
+        #         return "Block refused, unverifiable transaction: " + str(t)
 
     def VerifyBlock(self, b: Block): 
         """Verifies the block by checking all the block's attributes"""
