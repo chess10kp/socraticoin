@@ -11,9 +11,9 @@ print("***\n*** Failure Test: ALL SHOULD REFUSE!\n***")
 
 # Create a blockchain and 3 users
 BC = BlockChain()
-UserA = user_wallete()
-UserB = user_wallete()
-UserC = user_wallete()
+UserA = Wallet()
+UserB = Wallet()
+UserC = Wallet()
 
 # Create example transactions
 t1 = (Transaction(UserA.get_public_str(), UserB.get_public_str(), 100, 10)).Sign(UserA.get_private_key())

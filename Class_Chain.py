@@ -4,7 +4,7 @@
 from Class_Block import *
 from Class_Transaction import *
 from Cryptography import SHA256
-from Wallet import user_wallete
+from Wallet import Wallet
 
 
 def HashBlock(block: Block):
@@ -68,11 +68,11 @@ class BlockChain:
             3  # How computationally hard must hashes be? (36x exponential)
         )
         # For convienience, users and block references are packaged with the blockchain class
-        self.Users: list[user_wallete] = []
+        self.Users: list[Wallet] = []
         self.blockList: list[Block] = []
 
     def create_new_user(self):
-        a = user_wallete()
+        a = Wallet()
         self.Users.append(a)
         return a
 
