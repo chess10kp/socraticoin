@@ -1,4 +1,4 @@
-### Transaction.py # Ali
+### Class_Transaction.py # Ali
 # Transaction class
 
 from Cryptography import RSA_sig, verify_sig

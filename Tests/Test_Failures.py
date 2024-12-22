@@ -2,9 +2,8 @@
 # Tests all the failure cases for adding a block
 # TURN OFF printing from MineBlock() when running this
 
-from Class_Block import * # Block class
+from Class_Block import * # Block class (includes Transaction Class)
 from Class_Chain import * # BlockChain class & block hashing funcs
-from Class_Transaction import * # Transaction class
 from Cryptography import * # Signing functions
 
 print("***\n*** Failure Test: ALL SHOULD REFUSE!\n***")
@@ -22,7 +21,7 @@ t3 = (Transaction(UserC.get_public_str(), UserA.get_public_str(), 25, 15) ).Sign
 t4 = (Transaction(UserB.get_public_str(), UserA.get_public_str(), 50, 5)  ).Sign(UserB.get_private_key())
 t5 = (Transaction(UserA.get_public_str(), UserC.get_public_str(), 5, 1)   ).Sign(UserA.get_private_key())
 
-# Submit transactions to the transaction queue
+# TODO: Submit transactions to the transaction queue
 # BC.transactionQueue.append(t1)
 # BC.transactionQueue.append(t2)
 # BC.transactionQueue.append(t3)
@@ -34,7 +33,7 @@ print(BC.submitBlock(Block(0, "easyHash", 0, [], 100, UserA.get_public_str(), "G
 print(BC.submitBlock(Block(0, "0000000hardHash", 0, [], 100, UserA.get_public_str(), "Genesis_Block")))
 
 # Invalid block 3: Valid block with invalid transaction
-# Transaction validation is not yet implemented
+# TODO: Transaction validation is not yet implemented
 
 # Invalid block 4: Invalid Genesis Block Number
 print(BC.submitBlock(MineBlock(Block(999, "", 0, [], 100, UserA.get_public_str(), "Genesis_Block"), BC.difficulty)))

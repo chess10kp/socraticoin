@@ -3,7 +3,7 @@
 
 from Class_Transaction import *
 
-t1 = Transaction("A", "B", 100, 1)
-
 print("***\n*** Transaction Test\n***")
+
+t1 = Transaction("A", "B", 100, 1)
 print(t1)
