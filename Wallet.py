@@ -1,4 +1,6 @@
+### Wallet.py # Maria
 # create a create wallet that returns the funciton it'sef
+
 from RSA_new import pub_to_str, priv_to_str, gneratebothkey
 
 

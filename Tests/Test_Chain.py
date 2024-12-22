@@ -1,4 +1,4 @@
-### ChainTest.py # richiii
+### Test_Chain.py # richiii
 # Creates 3 example blocks 
 # The 1st block being the original block
 # and the 2nd/3rd blocks having the correct value for "prevHash"
@@ -6,7 +6,7 @@
 
 from Block import * # Block class
 from Chain import * # BlockChain class & block hashing funcs
-from wincringe import * # Transaction class
+from Transaction import * # Transaction class
 from RSA_new import * # Signing functions
 
 # Create a blockchain and 3 users

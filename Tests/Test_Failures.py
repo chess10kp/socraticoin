@@ -1,10 +1,10 @@
-### FailTests.py # richiii
+### Test_Failures.py # richiii
 # Tests all the failure cases for adding a block
-# Turn of printing from MineBlock() when running this
+# TURN OFF printing from MineBlock() when running this
 
 from Block import * # Block class
 from Chain import * # BlockChain class & block hashing funcs
-from wincringe import * # Transaction class
+from Transaction import * # Transaction class
 from RSA_new import * # Signing functions
 
 # Create a blockchain and 3 users

@@ -1,4 +1,7 @@
-from typing_extensions import override
+### Transaction.py # Ali
+# Transaction class
+
+# from typing_extensions import override # is this needed? idk
 from RSA_new import RSA_sig, verify_sig
 
 
@@ -10,7 +13,7 @@ class Transaction:
         self.signature: bytes = b""
         self.gasFee = gasFee
 
-    @override
+    # @override
     def __str__(self):
         return (
             str(self.sender)[:4]

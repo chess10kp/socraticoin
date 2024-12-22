@@ -2,9 +2,9 @@
 # Contains classes and funcs for implementing blockchain
 
 from Block import Block
-from wincringe import Transaction
+from Transaction import Transaction
 from RSA_new import SHA256
-from wallet import user_wallete
+from Wallet import user_wallete
 
 
 def HashBlock(block: Block):

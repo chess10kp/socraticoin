@@ -1,7 +1,7 @@
 import math
 import hashlib
 
-from wincringe import *
+from Transaction import *
 
 p = 3
 q = 7
