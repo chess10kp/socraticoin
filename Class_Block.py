@@ -1,7 +1,7 @@
 ### Block.py # richiii
 # Contains the 'Block' class
 
-from Transaction import Transaction # Transaction class
+from Class_Transaction import * # Transaction class
 
 class Block:
 	"""Block in the Blockchain"""

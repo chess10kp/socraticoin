@@ -1,3 +1,6 @@
+### RSA_new.py # Maria
+# Contains cryptography functions for creating keys, signatures, and hashing
+
 # IGAVEUP
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import ec
@@ -51,9 +54,7 @@ def verify_sig(public_key: DSAPublicKey, signature: bytes, data: bytes):
         print("invalid")
 
 
-def SHA256(msg: str) -> str:
-    # print(type(hashlib.sha256(msg.encode()).hexdigest()))
-    return hashlib.sha256(msg.encode()).hexdigest()
+def SHA256(msg: str) -> str: return hashlib.sha256(msg.encode()).hexdigest() # Hashes 'msg'
 
 
 ##################### test caseas

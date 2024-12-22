@@ -1,9 +1,9 @@
 ### Chain.py # richiii
 # Contains classes and funcs for implementing blockchain
 
-from Block import Block
-from Transaction import Transaction
-from RSA_new import SHA256
+from Class_Block import *
+from Class_Transaction import *
+from Cryptography import SHA256
 from Wallet import user_wallete
 
 
@@ -17,11 +17,9 @@ def HashBlock(block: Block):
 def MineBlock(block: Block | None = None, difficulty: int = 0):
     """Computes a correct hash for a block, according to the provided difficulty"""
 
-    if block is None:  # If no block provided, return
-        return None
+    if block is None: return None # If no block provided, return
 
-    # difficulty = num of 0's the hash should start with
-    difficultyString = "0" * difficulty
+    difficultyString = "0" * difficulty # difficulty = num of 0's the hash should start with
 
     # Compute hashes until one meets the difficulty requirement
     block.nonce = 0
