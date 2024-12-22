@@ -1,7 +1,7 @@
 ### Block.py # richiii
 # Contains the 'Block' data structure
 
-from win.wincringe import Transaction # Transaction class
+from wincringe import Transaction # Transaction class
 
 class Block:
 	"""Block in the Blockchain"""

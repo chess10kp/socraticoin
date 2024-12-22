@@ -1,7 +1,7 @@
 import math
 import hashlib
 
-from win.wincringe import *
+from wincringe import *
 
 p = 3
 q = 7

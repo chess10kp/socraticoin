@@ -1,5 +1,5 @@
 from typing_extensions import override
-from maria_compute.RSA_new import RSA_sig, verify_sig
+from RSA_new import RSA_sig, verify_sig
 
 
 class Transaction:

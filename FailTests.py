@@ -2,10 +2,10 @@
 # Tests all the failure cases for adding a block
 # Turn of printing from MineBlock() when running this
 
-from richiii.Block import * # Block class
-from richiii.Chain import * # BlockChain class & block hashing funcs
-from win.wincringe import * # Transaction class
-from maria_compute.RSA_new import * # Signing functions
+from Block import * # Block class
+from Chain import * # BlockChain class & block hashing funcs
+from wincringe import * # Transaction class
+from RSA_new import * # Signing functions
 
 # Create a blockchain and 3 users
 blockChain = BlockChain()

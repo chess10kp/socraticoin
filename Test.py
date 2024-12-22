@@ -4,10 +4,10 @@
 # and the 2nd/3rd blocks having the correct value for "prevHash"
 # The transactions on each block are signed & validated
 
-from richiii.Block import * # Block class
-from richiii.Chain import * # BlockChain class & block hashing funcs
-from win.wincringe import * # Transaction class
-from maria_compute.RSA_new import * # Signing functions
+from Block import * # Block class
+from Chain import * # BlockChain class & block hashing funcs
+from wincringe import * # Transaction class
+from RSA_new import * # Signing functions
 
 # Create a blockchain and 3 users
 blockChain = BlockChain()

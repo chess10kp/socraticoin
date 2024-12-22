@@ -1,10 +1,10 @@
 ### Chain.py # richiii
 # Contains classes and funcs for implementing blockchain
 
-from richiii.Block import Block
-from win.wincringe import Transaction
-from maria_compute.RSA_new import SHA256
-from maria_compute.wallet import user_wallete
+from Block import Block
+from wincringe import Transaction
+from RSA_new import SHA256
+from wallet import user_wallete
 
 
 def HashBlock(block: Block):
