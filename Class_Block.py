@@ -21,3 +21,14 @@ class Block:
 
 	# Strips the hash and returns the block
 	def unHashed(self): return Block(self.blockNumber, "", self.nonce, self.transactions, self.blockReward, self.rewardAddress, self.prevHash)
+
+	# Prints the block with it's information
+	def prettyPrint(self):
+		 print(f"+----BLOCK NO.{self.blockNumber:4d}----+")
+		 print(f"| HASH:   {self.currHash[0:4]}...{self.currHash[-4:]} |")
+		 print(f"| PREV:   {self.prevHash[0:4]}...{self.prevHash[-4:]} |")
+		 print("+---------------------+")
+		 print(f"| NONCE: {self.nonce:12d} |")
+		 print(f"| REWARD: {self.blockReward:11d} |")
+		 print(f"| RWD TO: {self.rewardAddress[0:4]}...{self.rewardAddress[-4:]} |")
+		 print("+---------------------+")
